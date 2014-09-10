@@ -106,10 +106,11 @@ var JXON = new (function () {
   function loadObjTree (oXMLDoc, oParentEl, oParentObj) {
     var vValue, oChild;
 
-    if (oParentObj instanceof String || oParentObj instanceof Number || oParentObj instanceof Boolean) {
-      oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toString())); /* verbosity level is 0 */
+    if (oParentObj.constructor === String || oParentObj.constructor === Number || oParentObj.constructor === Boolean) {
+      oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toString())); /* verbosity level is 0 or 1 */
+      if (oParentObj === oParentObj.valueOf()) { return; }
     } else if (oParentObj.constructor === Date) {
-      oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toGMTString()));    
+      oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toGMTString()));
     }
 
     for (var sName in oParentObj) {
@@ -123,36 +124,33 @@ var JXON = new (function () {
         oParentEl.setAttribute(sName.slice(1), vValue);
       } else if (vValue.constructor === Array) {
         for (var nItem = 0; nItem < vValue.length; nItem++) {
-          oChild = oXMLDoc.createElement(sName);
+          oChild = oXMLDoc.createElementNS(oParentEl.namespaceURI, sName);
           loadObjTree(oXMLDoc, oChild, vValue[nItem]);
           oParentEl.appendChild(oChild);
         }
       } else {
-        oChild = oXMLDoc.createElement(sName);
+        oChild = oXMLDoc.createElementNS(oParentEl.namespaceURI, sName);
         if (vValue instanceof Object) {
           loadObjTree(oXMLDoc, oChild, vValue);
         } else if (vValue !== null && vValue !== true) {
           oChild.appendChild(oXMLDoc.createTextNode(vValue.toString()));
         }
         oParentEl.appendChild(oChild);
-     }
-   }
+      }
+    }
   }
 
   this.build = function (oXMLParent, nVerbosity /* optional */, bFreeze /* optional */, bNesteAttributes /* optional */) {
     var _nVerb = arguments.length > 1 && typeof nVerbosity === "number" ? nVerbosity & 3 : /* put here the default verbosity level: */ 1;
-    return createObjTree(oXMLParent, _nVerb, bFreeze || false, arguments.length > 3 ? bNesteAttributes : _nVerb === 3);    
+    return createObjTree(oXMLParent, _nVerb, bFreeze || false, arguments.length > 3 ? bNesteAttributes : _nVerb === 3);
   };
 
-  this.unbuild = function (oObjTree) {    
-    var oNewDoc = document.implementation.createDocument("", "", null);
-    loadObjTree(oNewDoc, oNewDoc, oObjTree);
+  this.unbuild = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
+    var oNewDoc = document.implementation.createDocument(sNamespaceURI || null, sQualifiedName || "", oDocumentType || null);
+    loadObjTree(oNewDoc, oNewDoc.documentElement || oNewDoc, oObjTree);
     return oNewDoc;
   };
 
-  this.stringify = function (oObjTree) {
-    return (new XMLSerializer()).serializeToString(JXON.unbuild(oObjTree));
-  };
 })();
 
 if (typeof module !== 'undefined') module.exports = JXON;

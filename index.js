@@ -151,6 +151,9 @@ var JXON = new (function () {
     return oNewDoc;
   };
 
+  this.stringify = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
+    return (new XMLSerializer()).serializeToString(JXON.unbuild(oObjTree, sNamespaceURI, sQualifiedName, oDocumentType));
+  }
 })();
 
 if (typeof module !== 'undefined') module.exports = JXON;

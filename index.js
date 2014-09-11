@@ -1,6 +1,8 @@
 /*
  * JXON framework - Copyleft 2011 by Mozilla Developer Network
  *
+ * Revision #1 - September 5, 2014
+ *
  * https://developer.mozilla.org/en-US/docs/JXON
  *
  * This framework is released under the GNU Public License, version 3 or later.
@@ -8,6 +10,9 @@
  *
  * small modifications performed by the iD project:
  * https://github.com/openstreetmap/iD/commits/18aa33ba97b52cacf454e95c65d154000e052a1f/js/lib/jxon.js
+ *
+ * small modifications performed by user @bugreport0
+ * https://github.com/tyrasd/JXON/pull/2/commits
  *
  * adapted for nodejs and npm by Martin Raifer <tyr.asd@gmail.com>
  */

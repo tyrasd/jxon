@@ -1,11 +1,11 @@
 {
-  "name": "JXON",
-  "version": "1.0.0",
+  "name": "jxon",
+  "version": "1.1.0",
   "description": "A complete, bidirectional, JXON library",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/tyrasd/JXON.git"
+    "url": "git://github.com/tyrasd/jxon.git"
   },
   "browser": {
     "xmldom": false

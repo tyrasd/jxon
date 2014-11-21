@@ -25,7 +25,7 @@ if (typeof XMLSerializer === 'undefined') {
 
 var JXON = new (function () {
   var
-    sValueProp = "keyValue", sAttributesProp = "keyAttributes", sAttrPref = "@", /* you can customize these values */
+    sValProp = "keyValue", sAttrProp = "keyAttributes", sAttrsPref = "@", /* you can customize these values */
     aCache = [], rIsNull = /^\s*$/, rIsBool = /^(?:true|false)$/i;
 
   function parseText (sValue) {
@@ -81,7 +81,7 @@ var JXON = new (function () {
     if (bAttributes) {
       var
         nAttrLen = oParentNode.attributes.length,
-        sAPrefix = bNesteAttr ? "" : sAttrPref, oAttrParent = bNesteAttr ? {} : vResult;
+        sAPrefix = bNesteAttr ? "" : sAttrsPref, oAttrParent = bNesteAttr ? {} : vResult;
 
       for (var oAttrib, nAttrib = 0; nAttrib < nAttrLen; nLength++, nAttrib++) {
         oAttrib = oParentNode.attributes.item(nAttrib);
@@ -90,13 +90,13 @@ var JXON = new (function () {
 
       if (bNesteAttr) {
         if (bFreeze) { Object.freeze(oAttrParent); }
-        vResult[sAttributesProp] = oAttrParent;
+        vResult[sAttrProp] = oAttrParent;
         nLength -= nAttrLen - 1;
       }
     }
 
     if (nVerb === 3 || (nVerb === 2 || nVerb === 1 && nLength > 0) && sCollectedTxt) {
-      vResult[sValueProp] = vBuiltVal;
+      vResult[sValProp] = vBuiltVal;
     } else if (!bHighVerb && nLength === 0 && sCollectedTxt) {
       vResult = vBuiltVal;
     }
@@ -121,11 +121,11 @@ var JXON = new (function () {
     for (var sName in oParentObj) {
       vValue = oParentObj[sName];
       if (isFinite(sName) || vValue instanceof Function) { continue; } /* verbosity level is 0 */
-      if (sName === sValueProp) {
+      if (sName === sValProp) {
         if (vValue !== null && vValue !== true) { oParentEl.appendChild(oXMLDoc.createTextNode(vValue.constructor === Date ? vValue.toGMTString() : String(vValue))); }
-      } else if (sName === sAttributesProp) { /* verbosity level is 3 */
+      } else if (sName === sAttrProp) { /* verbosity level is 3 */
         for (var sAttrib in vValue) { oParentEl.setAttribute(sAttrib, vValue[sAttrib]); }
-      } else if (sName.charAt(0) === sAttrPref) {
+      } else if (sName.charAt(0) === sAttrsPref) {
         oParentEl.setAttribute(sName.slice(1), vValue);
       } else if (vValue.constructor === Array) {
         for (var nItem = 0; nItem < vValue.length; nItem++) {
@@ -158,7 +158,16 @@ var JXON = new (function () {
 
   this.stringify = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
     return (new XMLSerializer()).serializeToString(JXON.unbuild(oObjTree, sNamespaceURI, sQualifiedName, oDocumentType));
-  }
+  };
+
+  this.setValAttrPropPref = function (_sValProp /* optional */, _sAttrProp /* optional */, _sAttrsPref /* optional */) {
+    if (_sValProp)
+      sValProp = _sValProp;
+    if (_sAttrProp)
+      sAttrProp = _sAttrProp;
+    if (_sAttrsPref)
+      sAttrsPref = _sAttrsPref;
+  };
 })();
 
 if (typeof module !== 'undefined') module.exports = JXON;

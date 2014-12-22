@@ -11,7 +11,7 @@ Without changing the configuration, the library will work as original implementa
 - overrides default configuration properties
  
 Example:
-js```
+```js
 JXON.config({
   valueKey: '_', // default: 'keyValue'
   attrKey: '$', //default: 'keyAttributes'

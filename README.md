@@ -13,12 +13,12 @@ Without changing the configuration, the library will work as original implementa
 Example:
 ```js
 JXON.config({
-  valueKey: '_', // default: 'keyValue'
-  attrKey: '$', //default: 'keyAttributes'
-  attrPrefix: '$', // default: '@'
+  valueKey: '_',        // default: 'keyValue'
+  attrKey: '$',         //default: 'keyAttributes'
+  attrPrefix: '$',      // default: '@'
   lowerCaseTags: false, // default: true
-  trueIsEmpty: false, // default: true
-  autoDate: false // default: true
+  trueIsEmpty: false,   // default: true
+  autoDate: false       // default: true
 });
 ```
 ### JXON.parseXml(str:String)

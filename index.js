@@ -177,19 +177,26 @@ var JXON = new (function () {
     }
   }
 
-  this.build = function (oXMLParent, nVerbosity /* optional */, bFreeze /* optional */, bNesteAttributes /* optional */) {
+  this.toJs = this.build = function (oXMLParent, nVerbosity /* optional */, bFreeze /* optional */, bNesteAttributes /* optional */) {
     var _nVerb = arguments.length > 1 && typeof nVerbosity === "number" ? nVerbosity & 3 : /* put here the default verbosity level: */ 1;
     return createObjTree(oXMLParent, _nVerb, bFreeze || false, arguments.length > 3 ? bNesteAttributes : _nVerb === 3);
   };
 
-  this.unbuild = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
+  this.toXml = this.unbuild = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
     var oNewDoc = document.implementation.createDocument(sNamespaceURI || null, sQualifiedName || "", oDocumentType || null);
     loadObjTree(oNewDoc, oNewDoc.documentElement || oNewDoc, oObjTree);
     return oNewDoc;
   };
 
   this.stringify = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
-    return (new window.XMLSerializer()).serializeToString(JXON.unbuild(oObjTree, sNamespaceURI, sQualifiedName, oDocumentType));
+    var xmlNode = JXON.unbuild(oObjTree, sNamespaceURI, sQualifiedName, oDocumentType);
+    if (typeof window.XMLSerializer != "undefined") {
+        return (new window.XMLSerializer()).serializeToString(xmlNode);
+    } else if (typeof xmlNode.xml != "undefined") {
+        return xmlNode.xml;
+    } else {
+        return null;
+    }
   };
   // preserve compatibility
   this.setValAttrPropPref = function (_sValProp /* optional */, _sAttrProp /* optional */, _sAttrsPref /* optional */) {
@@ -226,7 +233,7 @@ var JXON = new (function () {
     }
   };
 
-  if (window.DOMParser) {
+  if (typeof window.DOMParser != "undefined") {
     this.parseXml = function(xmlStr) {
         return ( new window.DOMParser() ).parseFromString(xmlStr, 'application/xml');
     };

@@ -177,27 +177,17 @@ var JXON = new (function () {
     }
   }
 
-  this.toJs = this.build = function (oXMLParent, nVerbosity /* optional */, bFreeze /* optional */, bNesteAttributes /* optional */) {
+  this.xmlToJs = this.build = function (oXMLParent, nVerbosity /* optional */, bFreeze /* optional */, bNesteAttributes /* optional */) {
     var _nVerb = arguments.length > 1 && typeof nVerbosity === "number" ? nVerbosity & 3 : /* put here the default verbosity level: */ 1;
     return createObjTree(oXMLParent, _nVerb, bFreeze || false, arguments.length > 3 ? bNesteAttributes : _nVerb === 3);
   };
 
-  this.toXml = this.unbuild = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
+  this.jsToXml = this.unbuild = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
     var oNewDoc = document.implementation.createDocument(sNamespaceURI || null, sQualifiedName || "", oDocumentType || null);
     loadObjTree(oNewDoc, oNewDoc.documentElement || oNewDoc, oObjTree);
     return oNewDoc;
   };
 
-  this.stringify = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
-    var xmlNode = JXON.unbuild(oObjTree, sNamespaceURI, sQualifiedName, oDocumentType);
-    if (typeof window.XMLSerializer != "undefined") {
-        return (new window.XMLSerializer()).serializeToString(xmlNode);
-    } else if (typeof xmlNode.xml != "undefined") {
-        return xmlNode.xml;
-    } else {
-        return null;
-    }
-  };
   // preserve compatibility
   this.setValAttrPropPref = function (_sValProp /* optional */, _sAttrProp /* optional */, _sAttrsPref /* optional */) {
     this.config({
@@ -234,20 +224,37 @@ var JXON = new (function () {
   };
 
   if (typeof window.DOMParser != "undefined") {
-    this.parseXml = function(xmlStr) {
+    this.stringToXml = function(xmlStr) {
         return ( new window.DOMParser() ).parseFromString(xmlStr, 'application/xml');
     };
   } else if (typeof window.ActiveXObject != "undefined" && new window.ActiveXObject("Microsoft.XMLDOM")) {
-    this.parseXml = function(xmlStr) {
+    this.stringToXml = function(xmlStr) {
         var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
         xmlDoc.async = "false";
         xmlDoc.loadXML(xmlStr);
         return xmlDoc;
     };
   } else {
-    this.parseXml = function() { return null; }
+    this.stringToXml = function() { return null; }
   }
 
+  this.xmlToString = function (xmlObj) {
+    if (typeof xmlObj.xml !== "undefined") {
+        return xmlObj.xml;
+    } else {
+        if (typeof window.XMLSerializer === "undefined") window.XMLSerializer = require("xmldom").XMLSerializer;
+        return (new window.XMLSerializer()).serializeToString(xmlObj);
+    }
+  };
+
+  this.stringToJs = function(str) {
+    var xmlObj = this.stringToXml(str);
+    if (xmlObj.firstChild.tagName === 'xml') xmlObj = xmlObj.documentElement;
+    return this.xmlToJs(xmlObj);
+  }
+  this.jsToString = function(obj) {
+    return this.xmlToString(this.jsToXml(obj));
+  }
 })();
 
 if (typeof module !== 'undefined') module.exports = JXON;

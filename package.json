@@ -9,7 +9,7 @@
   ],
   "main": "index.js",
   "author": "MDN (https://developer.mozilla.org/en-US/docs/JXON)",
-  "contributors: [{
+  "contributors": [{
     "name": "Martin Raifer",
     "email": "tyr.asd@gmail.com"
   }, {

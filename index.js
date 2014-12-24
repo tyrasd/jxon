@@ -29,6 +29,7 @@
   * - turning tag and attributes to lower case is optional
   * - optional turning boolean true to empty tag
   * - auto Date parsing is optional
+  * - added parseXml method
   *
 */
 
@@ -190,14 +191,13 @@ var JXON = new (function () {
   this.stringify = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
     return (new window.XMLSerializer()).serializeToString(JXON.unbuild(oObjTree, sNamespaceURI, sQualifiedName, oDocumentType));
   };
-
+  // preserve compatibility
   this.setValAttrPropPref = function (_sValProp /* optional */, _sAttrProp /* optional */, _sAttrsPref /* optional */) {
-    if (_sValProp)
-      sValProp = _sValProp;
-    if (_sAttrProp)
-      sAttrProp = _sAttrProp;
-    if (_sAttrsPref)
-      sAttrsPref = _sAttrsPref;
+    this.config({
+        valueKey: _sValProp,
+        attrKey: _sAttrProp,
+        attrPrefix: _sAttrsPref
+    });
   };
   this.config = function(o) {
     for (var k in o) {

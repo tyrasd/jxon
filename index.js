@@ -187,51 +187,43 @@ var JXON = new (function () {
     return oNewDoc;
   };
 
-  // preserve compatibility
-  this.setValAttrPropPref = function (_sValProp /* optional */, _sAttrProp /* optional */, _sAttrsPref /* optional */) {
-    this.config({
-        valueKey: _sValProp,
-        attrKey: _sAttrProp,
-        attrPrefix: _sAttrsPref
-    });
-  };
   this.config = function(o) {
     for (var k in o) {
-        switch(k) {
-            case 'valueKey':
-                sValProp = o.valueKey;
-                break;
-            case 'attrKey':
-                sAttrProp = o.attrKey;
-                break;
-            case 'attrPrefix':
-                sAttrsPref = o.attrPrefix;
-                break;
-            case 'lowerCaseTags':
-                sLowCase = o.lowerCaseTags;
-                break;
-            case 'trueIsEmpty':
-                sEmptyTrue = o.trueIsEmpty;
-                break;
-            case 'autoDate':
-                sAutoDate = o.autoDate;
-                break;
-            default:
-                break;
-        }
+      switch(k) {
+        case 'valueKey':
+          sValProp = o.valueKey;
+          break;
+        case 'attrKey':
+          sAttrProp = o.attrKey;
+          break;
+        case 'attrPrefix':
+          sAttrsPref = o.attrPrefix;
+          break;
+        case 'lowerCaseTags':
+          sLowCase = o.lowerCaseTags;
+          break;
+        case 'trueIsEmpty':
+          sEmptyTrue = o.trueIsEmpty;
+          break;
+        case 'autoDate':
+          sAutoDate = o.autoDate;
+          break;
+        default:
+          break;
+      }
     }
   };
 
   if (typeof window.DOMParser !== "undefined") {
     this.stringToXml = function(xmlStr) {
-        return ( new window.DOMParser() ).parseFromString(xmlStr, 'application/xml');
+      return ( new window.DOMParser() ).parseFromString(xmlStr, 'application/xml');
     };
   } else if (typeof window.ActiveXObject !== "undefined" && new window.ActiveXObject("Microsoft.XMLDOM")) {
     this.stringToXml = function(xmlStr) {
-        var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
-        xmlDoc.async = "false";
-        xmlDoc.loadXML(xmlStr);
-        return xmlDoc;
+      var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
+      xmlDoc.async = "false";
+      xmlDoc.loadXML(xmlStr);
+      return xmlDoc;
     };
   } else {
     this.stringToXml = function() { return null; }
@@ -239,10 +231,10 @@ var JXON = new (function () {
 
   this.xmlToString = function (xmlObj) {
     if (typeof xmlObj.xml !== "undefined") {
-        return xmlObj.xml;
+      return xmlObj.xml;
     } else {
-        if (typeof window.XMLSerializer === "undefined") window.XMLSerializer = require("xmldom").XMLSerializer;
-        return (new window.XMLSerializer()).serializeToString(xmlObj);
+      if (typeof window.XMLSerializer === "undefined") window.XMLSerializer = require("xmldom").XMLSerializer;
+      return (new window.XMLSerializer()).serializeToString(xmlObj);
     }
   };
 
@@ -250,19 +242,22 @@ var JXON = new (function () {
     var xmlObj = this.stringToXml(str);
     if (xmlObj.firstChild.tagName === 'xml') xmlObj = xmlObj.documentElement;
     return this.xmlToJs(xmlObj);
-  }
-  this.jsToString = function(obj) {
-    return this.xmlToString(this.jsToXml(obj));
-  }
+  };
+
+  this.jsToString = this.stringify = function(oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
+    return this.xmlToString(
+      this.jsToXml(oObjTree, sNamespaceURI, sQualifiedName, oDocumentType)
+    );
+  };
 })();
 
 if (typeof module !== 'undefined') module.exports = JXON;
 else if ( typeof define === "function" && define.amd ) {
-    define(function () { 
-        return JXON; 
-    });
+  define(function () { 
+    return JXON; 
+  });
 } else {
-    window.JXON = JXON;
+  window.JXON = JXON;
 }
 
 })(this);

@@ -17,22 +17,45 @@
  * adapted for nodejs and npm by Martin Raifer <tyr.asd@gmail.com>
  */
 
-if (typeof XMLSerializer === 'undefined') {
-  XMLSerializer = require("xmldom").XMLSerializer;
+ /*
+  * Modifications:
+  * - added config method that excepts objects with props:
+  *   - valueKey (default: keyValue)
+  *   - attrKey (default: keyAttributes)
+  *   - attrPrefix (default: @)
+  *   - lowerCaseTags (default: true)
+  *   - trueIsEmpty (default: true)
+  *   - autoDate (default: true)
+  * - turning tag and attributes to lower case is optional
+  * - optional turning boolean true to empty tag
+  * - auto Date parsing is optional
+  * - added parseXml method
+  *
+*/
+
+(function(window){
+
+if (typeof window.DOMParser === 'undefined') {
+  window.DOMParser = require('xmldom').DOMParser;
   document = {};
   document.implementation = new (require("xmldom").DOMImplementation)();
 }
 
 var JXON = new (function () {
   var
-    sValProp = "keyValue", sAttrProp = "keyAttributes", sAttrsPref = "@", /* you can customize these values */
+    sValProp = "keyValue", 
+    sAttrProp = "keyAttributes", 
+    sAttrsPref = "@", 
+    sLowCase = true, 
+    sEmptyTrue = true,
+    sAutoDate = true, /* you can customize these values */
     aCache = [], rIsNull = /^\s*$/, rIsBool = /^(?:true|false)$/i;
 
   function parseText (sValue) {
     if (rIsNull.test(sValue)) { return null; }
     if (rIsBool.test(sValue)) { return sValue.toLowerCase() === "true"; }
     if (isFinite(sValue)) { return parseFloat(sValue); }
-    if (isFinite(Date.parse(sValue))) { return new Date(sValue); }
+    if (sAutoDate && isFinite(Date.parse(sValue))) { return new Date(sValue); }
     return sValue;
   }
 
@@ -67,7 +90,8 @@ var JXON = new (function () {
     if (!bHighVerb && (bChildren || bAttributes)) { vResult = nVerb === 0 ? objectify(vBuiltVal) : {}; }
 
     for (var nElId = nLevelStart; nElId < nLevelEnd; nElId++) {
-      sProp = aCache[nElId].nodeName.toLowerCase();
+      sProp = aCache[nElId].nodeName;
+      if (sLowCase) sProp = sProp.toLowerCase();
       vContent = createObjTree(aCache[nElId], nVerb, bFreeze, bNesteAttr);
       if (vResult.hasOwnProperty(sProp)) {
         if (vResult[sProp].constructor !== Array) { vResult[sProp] = [vResult[sProp]]; }
@@ -83,9 +107,11 @@ var JXON = new (function () {
         nAttrLen = oParentNode.attributes.length,
         sAPrefix = bNesteAttr ? "" : sAttrsPref, oAttrParent = bNesteAttr ? {} : vResult;
 
-      for (var oAttrib, nAttrib = 0; nAttrib < nAttrLen; nLength++, nAttrib++) {
+      for (var oAttrib, oAttribName, nAttrib = 0; nAttrib < nAttrLen; nLength++, nAttrib++) {
         oAttrib = oParentNode.attributes.item(nAttrib);
-        oAttrParent[sAPrefix + oAttrib.name.toLowerCase()] = parseText(oAttrib.value.trim());
+        oAttribName = oAttrib.name;
+        if (sLowCase) oAttribName = oAttribName.toLowerCase();
+        oAttrParent[sAPrefix + oAttribName] = parseText(oAttrib.value.trim());
       }
 
       if (bNesteAttr) {
@@ -121,6 +147,7 @@ var JXON = new (function () {
     for (var sName in oParentObj) {
       vValue = oParentObj[sName];
       if (isFinite(sName) || vValue instanceof Function) { continue; } /* verbosity level is 0 */
+      // when it is _
       if (sName === sValProp) {
         if (vValue !== null && vValue !== true) { oParentEl.appendChild(oXMLDoc.createTextNode(vValue.constructor === Date ? vValue.toGMTString() : String(vValue))); }
       } else if (sName === sAttrProp) { /* verbosity level is 3 */
@@ -139,35 +166,98 @@ var JXON = new (function () {
           loadObjTree(oXMLDoc, oChild, vValue);
         } else if (vValue !== null && vValue !== true) {
           oChild.appendChild(oXMLDoc.createTextNode(vValue.toString()));
+        } else if (!sEmptyTrue && vValue === true) {
+          oChild.appendChild(oXMLDoc.createTextNode(vValue.toString()));
+
         }
         oParentEl.appendChild(oChild);
+        
       }
     }
   }
 
-  this.build = function (oXMLParent, nVerbosity /* optional */, bFreeze /* optional */, bNesteAttributes /* optional */) {
+  this.xmlToJs = this.build = function (oXMLParent, nVerbosity /* optional */, bFreeze /* optional */, bNesteAttributes /* optional */) {
     var _nVerb = arguments.length > 1 && typeof nVerbosity === "number" ? nVerbosity & 3 : /* put here the default verbosity level: */ 1;
     return createObjTree(oXMLParent, _nVerb, bFreeze || false, arguments.length > 3 ? bNesteAttributes : _nVerb === 3);
   };
 
-  this.unbuild = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
+  this.jsToXml = this.unbuild = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
     var oNewDoc = document.implementation.createDocument(sNamespaceURI || null, sQualifiedName || "", oDocumentType || null);
     loadObjTree(oNewDoc, oNewDoc.documentElement || oNewDoc, oObjTree);
     return oNewDoc;
   };
 
-  this.stringify = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
-    return (new XMLSerializer()).serializeToString(JXON.unbuild(oObjTree, sNamespaceURI, sQualifiedName, oDocumentType));
+  this.config = function(o) {
+    for (var k in o) {
+      switch(k) {
+        case 'valueKey':
+          sValProp = o.valueKey;
+          break;
+        case 'attrKey':
+          sAttrProp = o.attrKey;
+          break;
+        case 'attrPrefix':
+          sAttrsPref = o.attrPrefix;
+          break;
+        case 'lowerCaseTags':
+          sLowCase = o.lowerCaseTags;
+          break;
+        case 'trueIsEmpty':
+          sEmptyTrue = o.trueIsEmpty;
+          break;
+        case 'autoDate':
+          sAutoDate = o.autoDate;
+          break;
+        default:
+          break;
+      }
+    }
   };
 
-  this.setValAttrPropPref = function (_sValProp /* optional */, _sAttrProp /* optional */, _sAttrsPref /* optional */) {
-    if (_sValProp)
-      sValProp = _sValProp;
-    if (_sAttrProp)
-      sAttrProp = _sAttrProp;
-    if (_sAttrsPref)
-      sAttrsPref = _sAttrsPref;
+  if (typeof window.DOMParser !== "undefined") {
+    this.stringToXml = function(xmlStr) {
+      return ( new window.DOMParser() ).parseFromString(xmlStr, 'application/xml');
+    };
+  } else if (typeof window.ActiveXObject !== "undefined" && new window.ActiveXObject("Microsoft.XMLDOM")) {
+    this.stringToXml = function(xmlStr) {
+      var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
+      xmlDoc.async = "false";
+      xmlDoc.loadXML(xmlStr);
+      return xmlDoc;
+    };
+  } else {
+    this.stringToXml = function() { return null; }
+  }
+
+  this.xmlToString = function (xmlObj) {
+    if (typeof xmlObj.xml !== "undefined") {
+      return xmlObj.xml;
+    } else {
+      if (typeof window.XMLSerializer === "undefined") window.XMLSerializer = require("xmldom").XMLSerializer;
+      return (new window.XMLSerializer()).serializeToString(xmlObj);
+    }
+  };
+
+  this.stringToJs = function(str) {
+    var xmlObj = this.stringToXml(str);
+    if (xmlObj.firstChild.tagName === 'xml') xmlObj = xmlObj.documentElement;
+    return this.xmlToJs(xmlObj);
+  };
+
+  this.jsToString = this.stringify = function(oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
+    return this.xmlToString(
+      this.jsToXml(oObjTree, sNamespaceURI, sQualifiedName, oDocumentType)
+    );
   };
 })();
 
 if (typeof module !== 'undefined') module.exports = JXON;
+else if ( typeof define === "function" && define.amd ) {
+  define(function () { 
+    return JXON; 
+  });
+} else {
+  window.JXON = JXON;
+}
+
+})(this);

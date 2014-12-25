@@ -8,8 +8,9 @@
     "js to xml", "js2xml", "json to xml", "json2xml"
   ],
   "main": "index.js",
-  "author": "MDN (https://developer.mozilla.org/en-US/docs/JXON)",
-  "contributors": [{
+  "authors": [{
+    "name": "MDN (https://developer.mozilla.org/en-US/docs/JXON)"
+  }, {
     "name": "Martin Raifer",
     "email": "tyr.asd@gmail.com"
   }, {
@@ -24,7 +25,9 @@
     "xmldom": false
   },
   "license": "GPL v3",
-  "dependencies": {
-    "xmldom": "~0.1.17"
-  }
+  "ignore": [
+    "README.md",
+    "package.json"
+  ]
 }
+

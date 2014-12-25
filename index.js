@@ -14,6 +14,9 @@
  * small modifications performed by user @bugreport0
  * https://github.com/tyrasd/JXON/pull/2/commits
  *
+ * some additions and modifications by user @igord
+ * https://github.com/tyrasd/JXON/pull/5/commits
+ *
  * adapted for nodejs and npm by Martin Raifer <tyr.asd@gmail.com>
  */
 
@@ -37,8 +40,8 @@
 
 if (typeof window.DOMParser === 'undefined') {
   window.DOMParser = require('xmldom').DOMParser;
-  document = {};
-  document.implementation = new (require("xmldom").DOMImplementation)();
+  window.document = {};
+  window.document.implementation = new (require("xmldom").DOMImplementation)();
 }
 
 var JXON = new (function () {
@@ -182,7 +185,7 @@ var JXON = new (function () {
   };
 
   this.jsToXml = this.unbuild = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
-    var oNewDoc = document.implementation.createDocument(sNamespaceURI || null, sQualifiedName || "", oDocumentType || null);
+    var oNewDoc = window.document.implementation.createDocument(sNamespaceURI || null, sQualifiedName || "", oDocumentType || null);
     loadObjTree(oNewDoc, oNewDoc.documentElement || oNewDoc, oObjTree);
     return oNewDoc;
   };
@@ -214,20 +217,9 @@ var JXON = new (function () {
     }
   };
 
-  if (typeof window.DOMParser !== "undefined") {
-    this.stringToXml = function(xmlStr) {
-      return ( new window.DOMParser() ).parseFromString(xmlStr, 'application/xml');
-    };
-  } else if (typeof window.ActiveXObject !== "undefined" && new window.ActiveXObject("Microsoft.XMLDOM")) {
-    this.stringToXml = function(xmlStr) {
-      var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
-      xmlDoc.async = "false";
-      xmlDoc.loadXML(xmlStr);
-      return xmlDoc;
-    };
-  } else {
-    this.stringToXml = function() { return null; }
-  }
+  this.stringToXml = function(xmlStr) {
+    return ( new window.DOMParser() ).parseFromString(xmlStr, 'application/xml');
+  };
 
   this.xmlToString = function (xmlObj) {
     if (typeof xmlObj.xml !== "undefined") {

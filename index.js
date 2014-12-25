@@ -260,4 +260,4 @@ else if ( typeof define === "function" && define.amd ) {
   window.JXON = JXON;
 }
 
-})(this);
+})(typeof window !== "undefined" ? window : this);

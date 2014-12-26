@@ -10,7 +10,9 @@ Without changing the configuration, the library will work as original implementa
 ### JXON.config(cnf)
 **Overrides default configuration properties**
 - cnf - Object with configuration properties.
+
 Example:
+
 ```js
 JXON.config({
   valueKey: '_',        // default: 'keyValue'
@@ -20,6 +22,39 @@ JXON.config({
   trueIsEmpty: false,   // default: true
   autoDate: false       // default: true
 });
+```
+
+Conversion example:
+
+```js
+{name: 'myportal'} 
+<name>myportal</name>
+
+{user: {
+    username: 'testUser1',
+    password: 'yolo',
+    enabled: true
+}}
+<user>
+  <username>testUser1</username>
+  <password>yolo</password>
+  <enabled>true</enabled>
+</user>
+
+{tag: {
+    $type: 'regular'
+    $blacklist: false
+    _: 'Backbase'
+}}
+<tag type="regular" blacklist="false">Backbase</tag>
+
+{dogs: {
+    name: ['Charlie', {$nick: 'yes', _:'Mad Max'}]
+}}
+<dogs>
+    <name>Charlie</name>
+    <name nick="yes">Mad Max</name>
+</dogs>
 ```
 
 ### JXON.stringToJs(xmlString)

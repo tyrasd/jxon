@@ -19,18 +19,25 @@ jxon.config({
 });
 
 describe('jxon', function(){
-    describe('.stringToXml > .xmlToString', function(){
-        it('should return return identical xmlString', function() {
-            var xml = jxon.stringToXml(xmlString),
-                str = jxon.xmlToString(xml);
-            assert.equal(xmlString, str);
-        })
-    })
     describe('.jsToXml > .xmlToJs', function(){
         it('should return return identical object', function() {
             var xml = jxon.jsToXml(jsObj);
             var newJs = jxon.xmlToJs(xml);
             assert.deepEqual(jsObj, newJs);
+        })
+    })
+    describe('.jsToString > .stringToJs', function(){
+        it('should return return identical object', function() {
+            var str = jxon.jsToString(jsObj);
+            var newJs = jxon.stringToJs(str);
+            assert.deepEqual(jsObj, newJs);
+        })
+    })
+    describe('.stringToJs > .jsToString > .stringToJs', function(){
+        it('should return return identical object', function() {
+            var obj1 = jxon.stringToJs(xmlString),
+                obj2 = jxon.stringToJs(jxon.jsToString(obj1));
+            assert.deepEqual(obj1, obj2);
         })
     })
 })

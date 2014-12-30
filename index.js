@@ -73,7 +73,7 @@ var JXON = new (function () {
   function createObjTree (oParentNode, nVerb, bFreeze, bNesteAttr) {
     var
       nLevelStart = aCache.length, bChildren = oParentNode.hasChildNodes(),
-      bAttributes = oParentNode.hasAttributes(), bHighVerb = Boolean(nVerb & 2);
+      bAttributes = oParentNode.nodeType === oParentNode.ELEMENT_NODE && oParentNode.hasAttributes(), bHighVerb = Boolean(nVerb & 2);
 
     var
       sProp, vContent, nLength = 0, sCollectedTxt = "",
@@ -232,7 +232,6 @@ var JXON = new (function () {
 
   this.stringToJs = function(str) {
     var xmlObj = this.stringToXml(str);
-    if (xmlObj.firstChild.tagName === 'xml') xmlObj = xmlObj.documentElement;
     return this.xmlToJs(xmlObj);
   };
 

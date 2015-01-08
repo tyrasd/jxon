@@ -5,6 +5,8 @@ A complete, bidirectional, JXON (lossless JavaScript XML Object Notation) librar
 
 Implementation of Mozilla's [JXON](https://developer.mozilla.org/en-US/docs/JXON) code. Head over to MDN for [Documentation](https://developer.mozilla.org/en-US/docs/JXON#Usage).
 
+[![Build Status](https://secure.travis-ci.org/tyrasd/jxon.svg)](https://travis-ci.org/tyrasd/jxon)
+
 Without changing the configuration, the library will work as original implementation.
 
 ### JXON.config(cnf)

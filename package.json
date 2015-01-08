@@ -1,6 +1,6 @@
 {
   "name": "jxon",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A complete, bidirectional, JXON library",
   "keywords": [
     "jxon", "bidirectional", "loseless", "badgerfish", "parker convention",
@@ -8,6 +8,10 @@
     "js to xml", "js2xml", "json to xml", "json2xml"
   ],
   "main": "index.js",
+  "scripts": {
+    "pretest": "npm ls --depth=Infinity > /dev/null",
+    "test": "./node_modules/mocha/bin/mocha test/test.js"
+  },
   "author": "MDN (https://developer.mozilla.org/en-US/docs/JXON)",
   "contributors": [{
     "name": "Martin Raifer",
@@ -26,5 +30,9 @@
   "license": "GPL v3",
   "dependencies": {
     "xmldom": "~0.1.17"
+  },
+  "devDependencies": {
+    "mocha": "~2.1.0",
+    "assert": "~1.3.0"
   }
 }

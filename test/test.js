@@ -15,7 +15,8 @@ jxon.config({
   attrPrefix: '$',      // default: '@'
   lowerCaseTags: false, // default: true
   trueIsEmpty: false,   // default: true
-  autoDate: false       // default: true
+  autoDate: false,      // default: true
+  ignorePrefixedNodes: false // default: true
 });
 
 describe('jxon', function(){

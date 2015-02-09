@@ -51,7 +51,8 @@ var JXON = new (function () {
     sAttrsPref = "@", 
     sLowCase = true, 
     sEmptyTrue = true,
-    sAutoDate = true, /* you can customize these values */
+    sAutoDate = true,
+    sIgnorePrefixed = false, /* you can customize these values */
     aCache = [], rIsNull = /^\s*$/, rIsBool = /^(?:true|false)$/i;
 
   function parseText (sValue) {
@@ -84,7 +85,7 @@ var JXON = new (function () {
         oNode = oParentNode.childNodes.item(nItem);
         if (oNode.nodeType === 4) { sCollectedTxt += oNode.nodeValue; } /* nodeType is "CDATASection" (4) */
         else if (oNode.nodeType === 3) { sCollectedTxt += oNode.nodeValue.trim(); } /* nodeType is "Text" (3) */
-        else if (oNode.nodeType === 1 && !oNode.prefix) { aCache.push(oNode); } /* nodeType is "Element" (1) */
+        else if (oNode.nodeType === 1 && !(sIgnorePrefixed && oNode.prefix)) { aCache.push(oNode); } /* nodeType is "Element" (1) */
       }
     }
 
@@ -210,6 +211,9 @@ var JXON = new (function () {
           break;
         case 'autoDate':
           sAutoDate = o.autoDate;
+          break;
+        case 'ignorePrefixedNodes':
+          sIgnorePrefixed = o.ignorePrefixedNodes;
           break;
         default:
           break;

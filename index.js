@@ -156,7 +156,7 @@ var JXON = new (function () {
         if (vValue !== null && vValue !== true) { oParentEl.appendChild(oXMLDoc.createTextNode(vValue.constructor === Date ? vValue.toGMTString() : String(vValue))); }
       } else if (sName === sAttrProp) { /* verbosity level is 3 */
         for (var sAttrib in vValue) { oParentEl.setAttribute(sAttrib, vValue[sAttrib]); }
-      } else if (sName.charAt(0) === sAttrsPref) {
+      } else if (sName.charAt(0) === sAttrsPref && sName !== sAttrsPref+'xmlns') {
         oParentEl.setAttribute(sName.slice(1), vValue);
       } else if (vValue.constructor === Array) {
         for (var nItem = 0; nItem < vValue.length; nItem++) {

@@ -25,20 +25,30 @@ describe('jxon', function(){
             var xml = jxon.jsToXml(jsObj);
             var newJs = jxon.xmlToJs(xml);
             assert.deepEqual(jsObj, newJs);
-        })
-    })
+        });
+    });
     describe('.jsToString > .stringToJs', function(){
         it('should return return identical object', function() {
             var str = jxon.jsToString(jsObj);
             var newJs = jxon.stringToJs(str);
             assert.deepEqual(jsObj, newJs);
-        })
-    })
+        });
+    });
     describe('.stringToJs > .jsToString > .stringToJs', function(){
         it('should return return identical object', function() {
             var obj1 = jxon.stringToJs(xmlString),
                 obj2 = jxon.stringToJs(jxon.jsToString(obj1));
             assert.deepEqual(obj1, obj2);
-        })
-    })
+        });
+    });
+    describe('empty nodes should be empty when trueIsEmpty = false', function(){
+        it('<empty/> should remain empty', function() {
+            var jx = jxon.stringToJs('<empty/>');
+            assert.equal(jx.empty, '');
+        });
+        it('<empty></empty> should remain empty', function() {
+            var jx = jxon.stringToJs('<empty></empty>');
+            assert.equal(jx.empty, '');
+        });
+    });
 })

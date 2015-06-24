@@ -78,7 +78,7 @@ var JXON = new (function () {
 
     var
       sProp, vContent, nLength = 0, sCollectedTxt = "",
-      vResult = bHighVerb ? {} : /* put here the default value for empty nodes: */ true;
+      vResult = bHighVerb ? {} : /* put here the default value for empty nodes: */ (sEmptyTrue ? true : '');
 
     if (bChildren) {
       for (var oNode, nItem = 0; nItem < oParentNode.childNodes.length; nItem++) {

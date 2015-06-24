@@ -192,6 +192,17 @@ var JXON = new (function () {
   };
 
   this.config = function(o) {
+    if (typeof o === 'undefined') {
+        return {
+            valueKey: sValProp,
+            attrKey: sAttrProp,
+            attrPrefix: sAttrPref,
+            lowerCaseTags: sLowCase,
+            trueIsEmpty: sEmptyTrue,
+            autoDate: sAutoDate,
+            ignorePrefixNodes: sIgnorePrefixed
+        };
+    }
     for (var k in o) {
       switch(k) {
         case 'valueKey':

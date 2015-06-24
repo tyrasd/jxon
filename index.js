@@ -58,7 +58,6 @@ var JXON = new (function () {
 
   function parseText (sValue) {
     if (!sParseValues) return sValue;
-      console.log(sValue);
     if (rIsNull.test(sValue)) { return null; }
     if (rIsBool.test(sValue)) { return sValue.toLowerCase() === "true"; }
     if (isFinite(sValue)) { return parseFloat(sValue); }
@@ -199,7 +198,7 @@ var JXON = new (function () {
         return {
             valueKey: sValProp,
             attrKey: sAttrProp,
-            attrPrefix: sAttrPref,
+            attrPrefix: sAttrsPref,
             lowerCaseTags: sLowCase,
             trueIsEmpty: sEmptyTrue,
             autoDate: sAutoDate,

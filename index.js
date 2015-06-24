@@ -52,10 +52,13 @@ var JXON = new (function () {
     sLowCase = true, 
     sEmptyTrue = true,
     sAutoDate = true,
-    sIgnorePrefixed = false, /* you can customize these values */
+    sIgnorePrefixed = false,
+    sParseValues = true, /* you can customize these values */
     aCache = [], rIsNull = /^\s*$/, rIsBool = /^(?:true|false)$/i;
 
   function parseText (sValue) {
+    if (!sParseValues) return sValue;
+      console.log(sValue);
     if (rIsNull.test(sValue)) { return null; }
     if (rIsBool.test(sValue)) { return sValue.toLowerCase() === "true"; }
     if (isFinite(sValue)) { return parseFloat(sValue); }
@@ -200,7 +203,8 @@ var JXON = new (function () {
             lowerCaseTags: sLowCase,
             trueIsEmpty: sEmptyTrue,
             autoDate: sAutoDate,
-            ignorePrefixNodes: sIgnorePrefixed
+            ignorePrefixNodes: sIgnorePrefixed,
+            parseValues: sParseValues
         };
     }
     for (var k in o) {
@@ -225,6 +229,9 @@ var JXON = new (function () {
           break;
         case 'ignorePrefixedNodes':
           sIgnorePrefixed = o.ignorePrefixedNodes;
+          break;
+        case 'parseValues':
+          sParseValues = o.parseValues;
           break;
         default:
           break;

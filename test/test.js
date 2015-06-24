@@ -10,13 +10,14 @@ var assert = require("assert"),
     };
 
 jxon.config({
-  valueKey: '_',        // default: 'keyValue'
-  attrKey: '$',         // default: 'keyAttributes'
-  attrPrefix: '$',      // default: '@'
-  lowerCaseTags: false, // default: true
-  trueIsEmpty: false,   // default: true
-  autoDate: false,      // default: true
-  ignorePrefixedNodes: false // default: true
+  valueKey: '_',                // default: 'keyValue'
+  attrKey: '$',                 // default: 'keyAttributes'
+  attrPrefix: '$',              // default: '@'
+  lowerCaseTags: false,         // default: true
+  trueIsEmpty: false,           // default: true
+  autoDate: false,              // default: true
+  ignorePrefixedNodes: false,   // default: true
+  parseValues: false            // default: true
 });
 
 describe('jxon', function(){
@@ -49,6 +50,12 @@ describe('jxon', function(){
         it('<empty></empty> should remain empty', function() {
             var jx = jxon.stringToJs('<empty></empty>');
             assert.equal(jx.empty, '');
+        });
+    });
+    describe('parseValues option', function(){
+        it('11.0 should remain string', function() {
+            var jx = jxon.stringToJs('<float>11.0</float>');
+            assert.ok(jx.float.indexOf('.0') !== -1);
         });
     });
 })

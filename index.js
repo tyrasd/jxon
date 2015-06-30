@@ -52,10 +52,12 @@ var JXON = new (function () {
     sLowCase = true, 
     sEmptyTrue = true,
     sAutoDate = true,
-    sIgnorePrefixed = false, /* you can customize these values */
+    sIgnorePrefixed = false,
+    sParseValues = true, /* you can customize these values */
     aCache = [], rIsNull = /^\s*$/, rIsBool = /^(?:true|false)$/i;
 
   function parseText (sValue) {
+    if (!sParseValues) return sValue;
     if (rIsNull.test(sValue)) { return null; }
     if (rIsBool.test(sValue)) { return sValue.toLowerCase() === "true"; }
     if (isFinite(sValue)) { return parseFloat(sValue); }
@@ -78,7 +80,7 @@ var JXON = new (function () {
 
     var
       sProp, vContent, nLength = 0, sCollectedTxt = "",
-      vResult = bHighVerb ? {} : /* put here the default value for empty nodes: */ true;
+      vResult = bHighVerb ? {} : /* put here the default value for empty nodes: */ (sEmptyTrue ? true : '');
 
     if (bChildren) {
       for (var oNode, nItem = 0; nItem < oParentNode.childNodes.length; nItem++) {
@@ -192,6 +194,18 @@ var JXON = new (function () {
   };
 
   this.config = function(o) {
+    if (typeof o === 'undefined') {
+        return {
+            valueKey: sValProp,
+            attrKey: sAttrProp,
+            attrPrefix: sAttrsPref,
+            lowerCaseTags: sLowCase,
+            trueIsEmpty: sEmptyTrue,
+            autoDate: sAutoDate,
+            ignorePrefixNodes: sIgnorePrefixed,
+            parseValues: sParseValues
+        };
+    }
     for (var k in o) {
       switch(k) {
         case 'valueKey':
@@ -214,6 +228,9 @@ var JXON = new (function () {
           break;
         case 'ignorePrefixedNodes':
           sIgnorePrefixed = o.ignorePrefixedNodes;
+          break;
+        case 'parseValues':
+          sParseValues = o.parseValues;
           break;
         default:
           break;

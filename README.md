@@ -17,13 +17,14 @@ Example:
 
 ```js
 JXON.config({
-  valueKey: '_',        // default: 'keyValue'
-  attrKey: '$',         // default: 'keyAttributes'
-  attrPrefix: '$',      // default: '@'
-  lowerCaseTags: false, // default: true
-  trueIsEmpty: false,   // default: true
-  autoDate: false,      // default: true
-  ignorePrefixedNodes: false // default: true
+  valueKey: '_',                // default: 'keyValue'
+  attrKey: '$',                 // default: 'keyAttributes'
+  attrPrefix: '$',              // default: '@'
+  lowerCaseTags: false,         // default: true
+  trueIsEmpty: false,           // default: true
+  autoDate: false,              // default: true
+  ignorePrefixedNodes: false,   // default: true
+  parseValues: false            // default: true
 });
 ```
 

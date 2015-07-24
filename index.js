@@ -47,7 +47,7 @@
         module.exports = factory(require('xmldom'));
     } else {
         // Browser globals (root is window)
-        root.returnExports = factory(window);
+        root.JXON = factory(window);
     }
 }(this, function (xmlDom) {
 

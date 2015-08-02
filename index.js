@@ -194,7 +194,8 @@
       };
 
       this.jsToXml = this.unbuild = function (oObjTree, sNamespaceURI /* optional */, sQualifiedName /* optional */, oDocumentType /* optional */) {
-        var oNewDoc = new xmlDom.DOMImplementation().createDocument(sNamespaceURI || null, sQualifiedName || "", oDocumentType || null);
+        var documentImplementation = xmlDom.document && xmlDom.document.implementation || new xmlDom.DOMImplementation();
+        var oNewDoc = documentImplementation.createDocument(sNamespaceURI || null, sQualifiedName || "", oDocumentType || null);
         loadObjTree(oNewDoc, oNewDoc.documentElement || oNewDoc, oObjTree);
         return oNewDoc;
       };

@@ -41,7 +41,7 @@
         // AMD. Register as an anonymous module.
         define(factory(window));
     } else if (typeof exports === 'object') {
-        if (window && window.DOMImplementation) {
+        if (typeof window === 'object' && window.DOMImplementation) {
             // Browserify. hardcode usage of browser's own XMLDom implementation
             // see https://github.com/tyrasd/jxon/issues/18
             module.exports = factory(window);

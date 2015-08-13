@@ -41,10 +41,16 @@
         // AMD. Register as an anonymous module.
         define(factory(window));
     } else if (typeof exports === 'object') {
-        // Node. Does not work with strict CommonJS, but
-        // only CommonJS-like environments that support module.exports,
-        // like Node.
-        module.exports = factory(require('xmldom'));
+        if (window && window.DOMImplementation) {
+            // Browserify. hardcode usage of browser's own XMLDom implementation
+            // see https://github.com/tyrasd/jxon/issues/18
+            module.exports = factory(window);
+        } else {
+            // Node. Does not work with strict CommonJS, but
+            // only CommonJS-like environments that support module.exports,
+            // like Node.
+            module.exports = factory(require('xmldom'));
+        }
     } else {
         // Browser globals (root is window)
         root.JXON = factory(window);

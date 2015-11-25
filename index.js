@@ -211,7 +211,7 @@
             return {
                 valueKey: sValProp,
                 attrKey: sAttrProp,
-                attrPrefix: sAttrPref,
+                attrPrefix: sAttrsPref,
                 lowerCaseTags: sLowCase,
                 trueIsEmpty: sEmptyTrue,
                 autoDate: sAutoDate,

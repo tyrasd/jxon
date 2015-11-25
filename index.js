@@ -172,7 +172,7 @@
           } else if (sName === sAttrProp) { /* verbosity level is 3 */
             for (var sAttrib in vValue) { oParentEl.setAttribute(sAttrib, vValue[sAttrib]); }
           } else if (sName === sAttrsPref+'xmlns') {
-            // do nothing: spacial handling of xml namespaces is done via createElementNS()
+            // do nothing: special handling of xml namespaces is done via createElementNS()
           } else if (sName.charAt(0) === sAttrsPref) {
             oParentEl.setAttribute(sName.slice(1), vValue);
           } else if (vValue.constructor === Array) {

@@ -165,7 +165,7 @@
 
         for (var sName in oParentObj) {
 	  vValue = oParentObj[sName];
-	  if (!vValue) vValue = {};
+	  if (vValue === null) vValue = {};
           if (isFinite(sName) || vValue instanceof Function) { continue; } /* verbosity level is 0 */
           // when it is _
           if (sName === sValProp) {

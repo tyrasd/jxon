@@ -59,10 +59,10 @@
 
     return new (function () {
       var
-        sValProp = "keyValue", 
-        sAttrProp = "keyAttributes", 
-        sAttrsPref = "@", 
-        sLowCase = true, 
+        sValProp = "keyValue",
+        sAttrProp = "keyAttributes",
+        sAttrsPref = "@",
+        sLowCase = true,
         sEmptyTrue = true,
         sAutoDate = true,
         sIgnorePrefixed = false,

@@ -58,4 +58,11 @@ describe('jxon', function(){
             assert.ok(jx.float.indexOf('.0') !== -1);
         });
     });
+    describe('json treatment', function(){
+        it('treat null values equally as empty objects', function() {
+            var strNull = jxon.jsToString({element: {a: null }});
+            var strEmptyObj = jxon.jsToString({element: {a: {} }});
+            assert.equal(strNull, strEmptyObj);
+        });
+    });
 })

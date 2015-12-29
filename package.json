@@ -1,6 +1,6 @@
 {
   "name": "jxon",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "A complete, bidirectional, JXON library",
   "keywords": [
     "jxon", "bidirectional", "loseless", "badgerfish", "parker convention",

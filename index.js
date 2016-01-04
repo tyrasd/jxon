@@ -66,6 +66,8 @@
         sEmptyTrue = true,
         sAutoDate = true,
         sIgnorePrefixed = false,
+        parserErrorHandler,
+        DOMParser,
         sParseValues = true, /* you can customize these values */
         aCache = [], rIsNull = /^\s*$/, rIsBool = /^(?:true|false)$/i;
 
@@ -219,7 +221,8 @@
                 trueIsEmpty: sEmptyTrue,
                 autoDate: sAutoDate,
                 ignorePrefixNodes: sIgnorePrefixed,
-                parseValues: sParseValues
+                parseValues: sParseValues,
+                parserErrorHandler: parserErrorHandler
             };
         }
         for (var k in o) {
@@ -248,6 +251,13 @@
             case 'parseValues':
               sParseValues = o.parseValues;
               break;
+            case 'parserErrorHandler':
+              parserErrorHandler = o.parserErrorHandler;
+              DOMParser = new xmlDom.DOMParser({
+                  errorHandler: parserErrorHandler,
+                  locator: {}
+              });
+              break;
             default:
               break;
           }
@@ -255,7 +265,8 @@
       };
 
       this.stringToXml = function(xmlStr) {
-        return ( new xmlDom.DOMParser() ).parseFromString(xmlStr, 'application/xml');
+        if (!DOMParser) DOMParser = new xmlDom.DOMParser();
+        return DOMParser.parseFromString(xmlStr, 'application/xml');
       };
 
       this.xmlToString = function (xmlObj) {

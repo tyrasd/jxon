@@ -28,6 +28,8 @@ JXON.config({
 });
 ```
 
+Additional option: parserErrorHandler (NodeJS only) - a function that will handle xmldom errors  
+
 Conversion example:
 
 ```js

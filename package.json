@@ -29,7 +29,7 @@
   },
   "license": "GPL v3",
   "dependencies": {
-    "xmldom": "~0.1.17"
+    "xmldom": "0.1.19"
   },
   "devDependencies": {
     "mocha": "~2.1.0",

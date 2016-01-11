@@ -59,13 +59,15 @@
 
     return new (function () {
       var
-        sValProp = "keyValue", 
-        sAttrProp = "keyAttributes", 
-        sAttrsPref = "@", 
-        sLowCase = true, 
+        sValProp = "keyValue",
+        sAttrProp = "keyAttributes",
+        sAttrsPref = "@",
+        sLowCase = true,
         sEmptyTrue = true,
         sAutoDate = true,
         sIgnorePrefixed = false,
+        parserErrorHandler,
+        DOMParser,
         sParseValues = true, /* you can customize these values */
         aCache = [], rIsNull = /^\s*$/, rIsBool = /^(?:true|false)$/i;
 
@@ -164,8 +166,8 @@
         }
 
         for (var sName in oParentObj) {
-	  vValue = oParentObj[sName];
-	  if (vValue === null) vValue = {};
+          vValue = oParentObj[sName];
+          if (vValue === null) vValue = {};
           if (isFinite(sName) || vValue instanceof Function) { continue; } /* verbosity level is 0 */
           // when it is _
           if (sName === sValProp) {
@@ -219,7 +221,8 @@
                 trueIsEmpty: sEmptyTrue,
                 autoDate: sAutoDate,
                 ignorePrefixNodes: sIgnorePrefixed,
-                parseValues: sParseValues
+                parseValues: sParseValues,
+                parserErrorHandler: parserErrorHandler
             };
         }
         for (var k in o) {
@@ -248,6 +251,13 @@
             case 'parseValues':
               sParseValues = o.parseValues;
               break;
+            case 'parserErrorHandler':
+              parserErrorHandler = o.parserErrorHandler;
+              DOMParser = new xmlDom.DOMParser({
+                  errorHandler: parserErrorHandler,
+                  locator: {}
+              });
+              break;
             default:
               break;
           }
@@ -255,7 +265,8 @@
       };
 
       this.stringToXml = function(xmlStr) {
-        return ( new xmlDom.DOMParser() ).parseFromString(xmlStr, 'application/xml');
+        if (!DOMParser) DOMParser = new xmlDom.DOMParser();
+        return DOMParser.parseFromString(xmlStr, 'application/xml');
       };
 
       this.xmlToString = function (xmlObj) {

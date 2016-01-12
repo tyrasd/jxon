@@ -1,6 +1,6 @@
 {
   "name": "jxon",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "description": "A complete, bidirectional, JXON library",
   "keywords": [
     "jxon", "bidirectional", "loseless", "badgerfish", "parker convention",
@@ -10,7 +10,7 @@
   "main": "index.js",
   "scripts": {
     "pretest": "npm ls --depth=Infinity > /dev/null",
-    "test": "./node_modules/mocha/bin/mocha test/test.js"
+    "test": "mocha"
   },
   "author": "MDN (https://developer.mozilla.org/en-US/docs/JXON)",
   "contributors": [{
@@ -29,7 +29,7 @@
   },
   "license": "GPL v3",
   "dependencies": {
-    "xmldom": "~0.1.17"
+    "xmldom": "0.1.19"
   },
   "devDependencies": {
     "mocha": "~2.1.0",

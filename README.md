@@ -1,36 +1,12 @@
-JXON
+JXON [![Build Status](https://secure.travis-ci.org/tyrasd/jxon.svg)](https://travis-ci.org/tyrasd/jxon)
 ====
 
-A complete, bidirectional, JXON (lossless JavaScript XML Object Notation) library. Works like nodejs module, AMD module or creates global window.JXON object.
+A complete, bidirectional, JXON (lossless JavaScript XML Object Notation) library. Packed as UMD.
 
 Implementation of Mozilla's [JXON](https://developer.mozilla.org/en-US/docs/JXON) code. Head over to MDN for [Documentation](https://developer.mozilla.org/en-US/docs/JXON#Usage).
 
-[![Build Status](https://secure.travis-ci.org/tyrasd/jxon.svg)](https://travis-ci.org/tyrasd/jxon)
 
-Without changing the configuration, the library will work as original implementation.
-
-### JXON.config(cnf)
-**Overrides default configuration properties**
-- cnf - Object with configuration properties.
-
-Example:
-
-```js
-JXON.config({
-  valueKey: '_',                // default: 'keyValue'
-  attrKey: '$',                 // default: 'keyAttributes'
-  attrPrefix: '$',              // default: '@'
-  lowerCaseTags: false,         // default: true
-  trueIsEmpty: false,           // default: true
-  autoDate: false,              // default: true
-  ignorePrefixedNodes: false,   // default: true
-  parseValues: false            // default: true
-});
-```
-
-Additional option: parserErrorHandler (NodeJS only) - a function that will handle xmldom errors  
-
-Conversion example:
+#### Example:
 
 ```js
 {name: 'myportal'} 
@@ -63,16 +39,36 @@ Conversion example:
 </dogs>
 ```
 
-### JXON.stringToJs(xmlString)
+# API
+
+### .config(cnf)
+**Overrides default configuration properties**
+- cnf - Object with configuration properties.
+
+_Defaults:_
+
+```js
+valueKey: '_',
+attrKey: '$',
+attrPrefix: '$',
+lowerCaseTags: false,
+trueIsEmpty: false,
+autoDate: false,
+ignorePrefixedNodes: false,
+parseValues: false,
+parserErrorHandler: undefined
+```
+
+### .stringToJs(xmlString)
 **Converts XML string to JS object.**
 - xmlString - XML string to convert to JXON notation JS object
 
-### JXON.jsToString(obj)
+### .jsToString(obj)
 **Converts JS object to XML string.**
 - obj - JS object in JXON notation to convert to XML string
 
-### JXON.build(xmlDocument, verbosity, freeze, nestedAttributes)
-**Converts XML document to JS object. _Alias: JXON.xmlToJs_**
+### .xmlToJs(xmlDocument, verbosity, freeze, nestedAttributes)
+**Converts XML document to JS object. _Alias: JXON.build_**
 - xmlDocument - The XML document to be converted into JavaScript Object.
 - verbosity - Optional verbosity level of conversion, from 0 to 3. It is almost equivalent to our algorithms from #4 to #1 (default value is 1, which is equivalent to the algorithm #3).
 - freeze - Optional boolean expressing whether the created object must be freezed or not (default value is false).
@@ -82,8 +78,8 @@ Example:
 ```js
 var myObject = JXON.build(xmlDoc);
 ```
-### JXON.unbuild(obj, namespaceURI, qualifiedNameStr, documentType)
-**Converts JS object to XML document. _Alias: JXON.jsToXml_**
+### .jsToXml(obj, namespaceURI, qualifiedNameStr, documentType)
+**Converts JS object to XML document. _Alias: JXON.unbuild_**
 - obj - The JavaScript Object from which you want to create your XML Document.
 - namespaceURI - Optional DOMString containing the namespace URI of the document to be created, or null if the document doesn't belong to one.
 - qualifiedNameStr - Optional DOMString containing the qualified name, that is an optional prefix and colon plus the local root element name, of the document to be created.
@@ -94,10 +90,25 @@ Example:
 var myObject = JXON.unbuild(myObject);
 ```
 
-### JXON.stringToXml(xmlString)
+### .stringToXml(xmlString)
 **Implementation of DOMParser.parseFromString, converts string to XML document.**
 - xmlString - XML string to convert to XML document
 
-### JXON.xmlToString(xmlObj)
+### .xmlToString(xmlObj)
 **Implementation of XMLSerializer.serializeToString, converts XML document to string.**
 - xmlObj - XML document to convert to XML string
+
+### .each(obj, callback[, thisArg])
+**Helper method to iterate node(s).**  
+In case that there is only one children node, JXON will return object. For multiple children it will return array. This method will always iterate nodes as array.
+- obj - array or object to iterate
+- callback - function to execute for each element
+- thisArg - optional. Value to use as this when eecuting callback
+
+Example:
+```js
+var jx = jxon.stringToJs('<val>foo</val>');
+jxon.each(jx.val, function(val) {
+    assert(val, 'foo');
+});
+```

@@ -56,27 +56,38 @@
         root.JXON = factory(window);
     }
 }(this, function (xmlDom) {
+    var opts = {
+      valueKey: '_',
+      attrKey: '$',
+      attrPrefix: '$',
+      lowerCaseTags: false,
+      trueIsEmpty: false,
+      autoDate: false,
+      ignorePrefixedNodes: false,
+      parseValues: false
+    };
+    var aCache = [];
+    var rIsNull = /^\s*$/;
+    var rIsBool = /^(?:true|false)$/i;
+    var DOMParser;
 
     return new (function () {
-      var
-        sValProp = "keyValue",
-        sAttrProp = "keyAttributes",
-        sAttrsPref = "@",
-        sLowCase = true,
-        sEmptyTrue = true,
-        sAutoDate = true,
-        sIgnorePrefixed = false,
-        parserErrorHandler,
-        DOMParser,
-        sParseValues = true, /* you can customize these values */
-        aCache = [], rIsNull = /^\s*$/, rIsBool = /^(?:true|false)$/i;
+      this.config = function(cfg) {
+        for (var k in cfg) opts[k] = cfg[k];
+        if (opts.parserErrorHandler) {
+          DOMParser = new xmlDom.DOMParser({
+              errorHandler: parserErrorHandler,
+              locator: {}
+          });
+        }
+      }
 
       function parseText (sValue) {
-        if (!sParseValues) return sValue;
+        if (!opts.parseValues) return sValue;
         if (rIsNull.test(sValue)) { return null; }
         if (rIsBool.test(sValue)) { return sValue.toLowerCase() === "true"; }
         if (isFinite(sValue)) { return parseFloat(sValue); }
-        if (sAutoDate && isFinite(Date.parse(sValue))) { return new Date(sValue); }
+        if (opts.autoDate && isFinite(Date.parse(sValue))) { return new Date(sValue); }
         return sValue;
       }
 
@@ -95,14 +106,14 @@
 
         var
           sProp, vContent, nLength = 0, sCollectedTxt = "",
-          vResult = bHighVerb ? {} : /* put here the default value for empty nodes: */ (sEmptyTrue ? true : '');
+          vResult = bHighVerb ? {} : /* put here the default value for empty nodes: */ (opts.trueIsEmpty ? true : '');
 
         if (bChildren) {
           for (var oNode, nItem = 0; nItem < oParentNode.childNodes.length; nItem++) {
             oNode = oParentNode.childNodes.item(nItem);
             if (oNode.nodeType === 4) { sCollectedTxt += oNode.nodeValue; } /* nodeType is "CDATASection" (4) */
             else if (oNode.nodeType === 3) { sCollectedTxt += oNode.nodeValue.trim(); } /* nodeType is "Text" (3) */
-            else if (oNode.nodeType === 1 && !(sIgnorePrefixed && oNode.prefix)) { aCache.push(oNode); } /* nodeType is "Element" (1) */
+            else if (oNode.nodeType === 1 && !(opts.ignorePrefixedNodes && oNode.prefix)) { aCache.push(oNode); } /* nodeType is "Element" (1) */
           }
         }
 
@@ -112,7 +123,7 @@
 
         for (var nElId = nLevelStart; nElId < nLevelEnd; nElId++) {
           sProp = aCache[nElId].nodeName;
-          if (sLowCase) sProp = sProp.toLowerCase();
+          if (opts.lowerCaseTags) sProp = sProp.toLowerCase();
           vContent = createObjTree(aCache[nElId], nVerb, bFreeze, bNesteAttr);
           if (vResult.hasOwnProperty(sProp)) {
             if (vResult[sProp].constructor !== Array) { vResult[sProp] = [vResult[sProp]]; }
@@ -126,24 +137,24 @@
         if (bAttributes) {
           var
             nAttrLen = oParentNode.attributes.length,
-            sAPrefix = bNesteAttr ? "" : sAttrsPref, oAttrParent = bNesteAttr ? {} : vResult;
+            sAPrefix = bNesteAttr ? "" : opts.attrPrefix, oAttrParent = bNesteAttr ? {} : vResult;
 
           for (var oAttrib, oAttribName, nAttrib = 0; nAttrib < nAttrLen; nLength++, nAttrib++) {
             oAttrib = oParentNode.attributes.item(nAttrib);
             oAttribName = oAttrib.name;
-            if (sLowCase) oAttribName = oAttribName.toLowerCase();
+            if (opts.lowerCaseTags) oAttribName = oAttribName.toLowerCase();
             oAttrParent[sAPrefix + oAttribName] = parseText(oAttrib.value.trim());
           }
 
           if (bNesteAttr) {
             if (bFreeze) { Object.freeze(oAttrParent); }
-            vResult[sAttrProp] = oAttrParent;
+            vResult[opts.attrKey] = oAttrParent;
             nLength -= nAttrLen - 1;
           }
         }
 
         if (nVerb === 3 || (nVerb === 2 || nVerb === 1 && nLength > 0) && sCollectedTxt) {
-          vResult[sValProp] = vBuiltVal;
+          vResult[opts.valueKey] = vBuiltVal;
         } else if (!bHighVerb && nLength === 0 && sCollectedTxt) {
           vResult = vBuiltVal;
         }
@@ -170,27 +181,27 @@
           if (vValue === null) vValue = {};
           if (isFinite(sName) || vValue instanceof Function) { continue; } /* verbosity level is 0 */
           // when it is _
-          if (sName === sValProp) {
+          if (sName === opts.valueKey) {
             if (vValue !== null && vValue !== true) { oParentEl.appendChild(oXMLDoc.createTextNode(vValue.constructor === Date ? vValue.toGMTString() : String(vValue))); }
-          } else if (sName === sAttrProp) { /* verbosity level is 3 */
+          } else if (sName === opts.attrKey) { /* verbosity level is 3 */
             for (var sAttrib in vValue) { oParentEl.setAttribute(sAttrib, vValue[sAttrib]); }
-          } else if (sName === sAttrsPref+'xmlns') {
+          } else if (sName === opts.attrPrefix+'xmlns') {
             // do nothing: special handling of xml namespaces is done via createElementNS()
-          } else if (sName.charAt(0) === sAttrsPref) {
+          } else if (sName.charAt(0) === opts.attrPrefix) {
             oParentEl.setAttribute(sName.slice(1), vValue);
           } else if (vValue.constructor === Array) {
             for (var nItem = 0; nItem < vValue.length; nItem++) {
-              oChild = oXMLDoc.createElementNS(vValue[nItem][sAttrsPref+'xmlns'] || oParentEl.namespaceURI, sName);
+              oChild = oXMLDoc.createElementNS(vValue[nItem][opts.attrPrefix+'xmlns'] || oParentEl.namespaceURI, sName);
               loadObjTree(oXMLDoc, oChild, vValue[nItem]);
               oParentEl.appendChild(oChild);
             }
           } else {
-            oChild = oXMLDoc.createElementNS((vValue || {})[sAttrsPref+'xmlns'] || oParentEl.namespaceURI, sName);
+            oChild = oXMLDoc.createElementNS((vValue || {})[opts.attrPrefix+'xmlns'] || oParentEl.namespaceURI, sName);
             if (vValue instanceof Object) {
               loadObjTree(oXMLDoc, oChild, vValue);
             } else if (vValue !== null && vValue !== true) {
               oChild.appendChild(oXMLDoc.createTextNode(vValue.toString()));
-            } else if (!sEmptyTrue && vValue === true) {
+            } else if (!opts.trueIsEmpty && vValue === true) {
               oChild.appendChild(oXMLDoc.createTextNode(vValue.toString()));
 
             }
@@ -209,59 +220,6 @@
         var oNewDoc = documentImplementation.createDocument(sNamespaceURI || null, sQualifiedName || "", oDocumentType || null);
         loadObjTree(oNewDoc, oNewDoc.documentElement || oNewDoc, oObjTree);
         return oNewDoc;
-      };
-
-      this.config = function(o) {
-        if (typeof o === 'undefined') {
-            return {
-                valueKey: sValProp,
-                attrKey: sAttrProp,
-                attrPrefix: sAttrsPref,
-                lowerCaseTags: sLowCase,
-                trueIsEmpty: sEmptyTrue,
-                autoDate: sAutoDate,
-                ignorePrefixNodes: sIgnorePrefixed,
-                parseValues: sParseValues,
-                parserErrorHandler: parserErrorHandler
-            };
-        }
-        for (var k in o) {
-          switch(k) {
-            case 'valueKey':
-              sValProp = o.valueKey;
-              break;
-            case 'attrKey':
-              sAttrProp = o.attrKey;
-              break;
-            case 'attrPrefix':
-              sAttrsPref = o.attrPrefix;
-              break;
-            case 'lowerCaseTags':
-              sLowCase = o.lowerCaseTags;
-              break;
-            case 'trueIsEmpty':
-              sEmptyTrue = o.trueIsEmpty;
-              break;
-            case 'autoDate':
-              sAutoDate = o.autoDate;
-              break;
-            case 'ignorePrefixedNodes':
-              sIgnorePrefixed = o.ignorePrefixedNodes;
-              break;
-            case 'parseValues':
-              sParseValues = o.parseValues;
-              break;
-            case 'parserErrorHandler':
-              parserErrorHandler = o.parserErrorHandler;
-              DOMParser = new xmlDom.DOMParser({
-                  errorHandler: parserErrorHandler,
-                  locator: {}
-              });
-              break;
-            default:
-              break;
-          }
-        }
       };
 
       this.stringToXml = function(xmlStr) {
@@ -286,6 +244,11 @@
         return this.xmlToString(
           this.jsToXml(oObjTree, sNamespaceURI, sQualifiedName, oDocumentType)
         );
+      };
+
+      this.each = function(arr, func, thisArg) {
+        if (arr instanceof Array) arr.forEach(func, thisArg);
+        else [arr].forEach(func, thisArg);
       };
     })();
 

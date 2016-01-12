@@ -9,17 +9,6 @@ var assert = require("assert"),
         }
     };
 
-jxon.config({
-  valueKey: '_',                // default: 'keyValue'
-  attrKey: '$',                 // default: 'keyAttributes'
-  attrPrefix: '$',              // default: '@'
-  lowerCaseTags: false,         // default: true
-  trueIsEmpty: false,           // default: true
-  autoDate: false,              // default: true
-  ignorePrefixedNodes: false,   // default: true
-  parseValues: false            // default: true
-});
-
 describe('jxon', function(){
     describe('.jsToXml > .xmlToJs', function(){
         it('should return return identical object', function() {
@@ -63,6 +52,20 @@ describe('jxon', function(){
             var strNull = jxon.jsToString({element: {a: null }});
             var strEmptyObj = jxon.jsToString({element: {a: {} }});
             assert.equal(strNull, strEmptyObj);
+        });
+    });
+    describe('.each', function(){
+        it('one node should iterate', function() {
+            var jx = jxon.stringToJs('<val>foo</val>');
+            jxon.each(jx.val, function(val) {
+                assert(val, 'foo');
+            });
+        });
+        it('multiple nodes should iterate', function() {
+            var jx = jxon.stringToJs('<val>foo</val><val>foo</val>');
+            jxon.each(jx.val, function(val) {
+                assert(val, 'foo');
+            });
         });
     });
 })

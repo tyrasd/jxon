@@ -3,9 +3,19 @@
   "version": "2.0.0",
   "description": "A complete, bidirectional, JXON library",
   "keywords": [
-    "jxon", "bidirectional", "loseless", "badgerfish", "parker convention",
-    "xml to js", "xml2js", "xml to json", "xml2json",
-    "js to xml", "js2xml", "json to xml", "json2xml"
+    "jxon",
+    "bidirectional",
+    "loseless",
+    "badgerfish",
+    "parker convention",
+    "xml to js",
+    "xml2js",
+    "xml to json",
+    "xml2json",
+    "js to xml",
+    "js2xml",
+    "json to xml",
+    "json2xml"
   ],
   "main": "index.js",
   "scripts": {
@@ -13,13 +23,16 @@
     "test": "mocha"
   },
   "author": "MDN (https://developer.mozilla.org/en-US/docs/JXON)",
-  "contributors": [{
-    "name": "Martin Raifer",
-    "email": "tyr.asd@gmail.com"
-  }, {
-    "name": "Igor Dimitrijevic",
-    "email": "igor@ground.gr"
-  }],
+  "contributors": [
+    {
+      "name": "Martin Raifer",
+      "email": "tyr.asd@gmail.com"
+    },
+    {
+      "name": "Igor Dimitrijevic",
+      "email": "igor@ground.gr"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/tyrasd/jxon.git"
@@ -29,7 +42,7 @@
   },
   "license": "GPL v3",
   "dependencies": {
-    "xmldom": "0.1.19"
+    "xmldom": "^0.1.21"
   },
   "devDependencies": {
     "mocha": "~2.1.0",

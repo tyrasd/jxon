@@ -23,6 +23,25 @@ describe('jxon', function(){
             var newJs = jxon.stringToJs(str);
             assert.deepEqual(jsObj, newJs);
         });
+        it('should parse xmlns:y', function() {
+            var obj = {
+                'test:root': {
+                    '$xmlns:y': 'foo'
+                }
+            };
+            var str = jxon.jsToString(obj);
+            assert.equal(str, '<test:root xmlns:y="foo"/>');
+        });
+        it('should parse xmlns', function() {
+            var obj = {
+                test: {
+                    '$xmlns': 'foo',
+                    '$xmlns:y': 'moo'
+                }
+            };
+            var str = jxon.jsToString(obj);
+            assert.equal(str, '<test xmlns="foo" xmlns:y="moo"/>');
+        });
     });
     describe('.stringToJs > .jsToString > .stringToJs', function(){
         it('should return return identical object', function() {

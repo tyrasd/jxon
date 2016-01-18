@@ -76,7 +76,7 @@
         for (var k in cfg) opts[k] = cfg[k];
         if (opts.parserErrorHandler) {
           DOMParser = new xmlDom.DOMParser({
-              errorHandler: parserErrorHandler,
+              errorHandler: opts.parserErrorHandler,
               locator: {}
           });
         }
@@ -186,6 +186,7 @@
           } else if (sName === opts.attrKey) { /* verbosity level is 3 */
             for (var sAttrib in vValue) { oParentEl.setAttribute(sAttrib, vValue[sAttrib]); }
           } else if (sName === opts.attrPrefix+'xmlns') {
+            oParentEl.setAttribute(sName.slice(1), vValue);
             // do nothing: special handling of xml namespaces is done via createElementNS()
           } else if (sName.charAt(0) === opts.attrPrefix) {
             oParentEl.setAttribute(sName.slice(1), vValue);

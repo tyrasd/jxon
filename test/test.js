@@ -1,7 +1,7 @@
 var assert = require("assert"),
     fs = require('fs'),
     jxon = require('../index'),
-    xmlString = fs.readFileSync('./test/example.xml','utf8'),
+    xmlString = require('./example.xml.json'),
     jsObj = {
         root: {
             $attr: 'value',

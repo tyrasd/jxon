@@ -3,23 +3,38 @@
   "version": "1.6.1",
   "description": "A complete, bidirectional, JXON library",
   "keywords": [
-    "jxon", "bidirectional", "loseless", "badgerfish", "parker convention",
-    "xml to js", "xml2js", "xml to json", "xml2json",
-    "js to xml", "js2xml", "json to xml", "json2xml"
+    "jxon",
+    "bidirectional",
+    "loseless",
+    "badgerfish",
+    "parker convention",
+    "xml to js",
+    "xml2js",
+    "xml to json",
+    "xml2json",
+    "js to xml",
+    "js2xml",
+    "json to xml",
+    "json2xml"
   ],
   "main": "index.js",
   "scripts": {
     "pretest": "npm ls --depth=Infinity > /dev/null",
-    "test": "./node_modules/mocha/bin/mocha test/test.js"
+    "test": "npm run test-node && npm run test-webkit",
+    "test-node": "mocha test/test.js",
+    "test-webkit": "mocha-phantomjs test/index.html"
   },
   "author": "MDN (https://developer.mozilla.org/en-US/docs/JXON)",
-  "contributors": [{
-    "name": "Martin Raifer",
-    "email": "tyr.asd@gmail.com"
-  }, {
-    "name": "Igor Dimitrijevic",
-    "email": "igor@ground.gr"
-  }],
+  "contributors": [
+    {
+      "name": "Martin Raifer",
+      "email": "tyr.asd@gmail.com"
+    },
+    {
+      "name": "Igor Dimitrijevic",
+      "email": "igor@ground.gr"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/tyrasd/jxon.git"
@@ -29,6 +44,7 @@
   },
   "license": "GPL v3",
   "dependencies": {
+    "mocha-phantomjs": "^4.0.2",
     "xmldom": "0.1.19"
   },
   "devDependencies": {

@@ -156,7 +156,7 @@
       }
 
       function loadObjTree (oXMLDoc, oParentEl, oParentObj) {
-        var vValue, oChild;
+        var vValue, oChild, elementNS;
 
         if (oParentObj.constructor === String || oParentObj.constructor === Number || oParentObj.constructor === Boolean) {
           oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toString())); /* verbosity level is 0 or 1 */
@@ -180,12 +180,20 @@
             oParentEl.setAttribute(sName.slice(1), vValue);
           } else if (vValue.constructor === Array) {
             for (var nItem = 0; nItem < vValue.length; nItem++) {
-              oChild = oXMLDoc.createElementNS(vValue[nItem][sAttrsPref+'xmlns'] || oParentEl.namespaceURI, sName);
+              elementNS = vValue[nItem][sAttrsPref+'xmlns'] || oParentEl.namespaceURI;
+              if (elementNS)
+                oChild = oXMLDoc.createElementNS(elementNS, sName);
+              else
+                oChild = oXMLDoc.createElement(sName);
               loadObjTree(oXMLDoc, oChild, vValue[nItem]);
               oParentEl.appendChild(oChild);
             }
           } else {
-            oChild = oXMLDoc.createElementNS((vValue || {})[sAttrsPref+'xmlns'] || oParentEl.namespaceURI, sName);
+            elementNS = (vValue || {})[sAttrsPref+'xmlns'] || oParentEl.namespaceURI;
+            if (elementNS)
+              oChild = oXMLDoc.createElementNS(elementNS, sName);
+            else
+              oChild = oXMLDoc.createElement(sName);
             if (vValue instanceof Object) {
               loadObjTree(oXMLDoc, oChild, vValue);
             } else if (vValue !== null && vValue !== true) {

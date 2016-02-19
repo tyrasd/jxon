@@ -65,4 +65,54 @@ describe('jxon', function(){
             assert.equal(strNull, strEmptyObj);
         });
     });
-})
+    describe('treats xmlns', function(){
+        it('as property', function() {
+            var strNull = jxon.jsToString({
+              'TrainingCenterDatabase': {
+                '$xmlns:ns2': '1',
+                '$xmlns:xsi': '2',
+                '$xmlns:ns4': '3',
+                '$xmlns:ns5': '4',
+                '$xmlns:tpx': '5',
+                '$xmlns': '6',
+                'Activities': [],
+                'Author': {
+                  '$xsi:type': 'Application_t',
+                  'Name': 'test',
+                  'Build': {
+                    'Version': {
+                      'VersionMajor': 80
+                    }
+                  },
+                  'LangID': 'en'
+                }
+              }
+            });
+            var strEmptyObj =
+              '<TrainingCenterDatabase' +
+                  ' xmlns:ns2="1"' +
+                  ' xmlns:xsi="2"' +
+                  ' xmlns:ns4="3"' +
+                  ' xmlns:ns5="4"' +
+                  ' xmlns:tpx="5"' +
+                  ' xmlns="6">' +
+                '<Author' +
+                    ' xsi:type="Application_t">' +
+                  '<Name>test</Name>' +
+                  '<Build>' +
+                    '<Version>' +
+                      '<VersionMajor>80</VersionMajor>' +
+                    '</Version>' +
+                  '</Build>' +
+                  '<LangID>en</LangID>' +
+                '</Author>' +
+              '</TrainingCenterDatabase>';
+            assert.equal(strNull, strEmptyObj);
+        });
+    });
+    describe('config', function(){
+      it('can reset', function() {
+        assert.notEqual(JSON.stringify(jxon.config()), JSON.stringify(jxon.configReset()));
+      });
+    });
+});

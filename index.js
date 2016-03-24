@@ -39,7 +39,7 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(factory(window));
+        define([], factory(window));
     } else if (typeof exports === 'object') {
         if (typeof window === 'object' && window.DOMImplementation) {
             // Browserify. hardcode usage of browser's own XMLDom implementation

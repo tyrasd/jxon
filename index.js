@@ -69,7 +69,8 @@
         parserErrorHandler,
         DOMParser,
         sParseValues = true, /* you can customize these values */
-        aCache = [], rIsNull = /^\s*$/, rIsBool = /^(?:true|false)$/i;
+        aCache = [], rIsNull = /^\s*$/, rIsBool = /^(?:true|false)$/i,
+        originalConfig;
 
       function parseText (sValue) {
         if (!sParseValues) return sValue;
@@ -174,8 +175,6 @@
             if (vValue !== null && vValue !== true) { oParentEl.appendChild(oXMLDoc.createTextNode(vValue.constructor === Date ? vValue.toGMTString() : String(vValue))); }
           } else if (sName === sAttrProp) { /* verbosity level is 3 */
             for (var sAttrib in vValue) { oParentEl.setAttribute(sAttrib, vValue[sAttrib]); }
-          } else if (sName === sAttrsPref+'xmlns') {
-            // do nothing: special handling of xml namespaces is done via createElementNS()
           } else if (sName.charAt(0) === sAttrsPref) {
             oParentEl.setAttribute(sName.slice(1), vValue);
           } else if (vValue.constructor === Array) {
@@ -233,6 +232,9 @@
                 parserErrorHandler: parserErrorHandler
             };
         }
+        if (originalConfig === undefined) {
+          originalConfig = JSON.stringify(this.config());
+        }
         for (var k in o) {
           switch(k) {
             case 'valueKey':
@@ -270,6 +272,20 @@
               break;
           }
         }
+      };
+
+      this.configReset = function() {
+        var o = JSON.parse(originalConfig);
+        sValProp = o.valueKey;
+        sAttrProp = o.attrKey;
+        sAttrsPref = o.attrPrefix;
+        sLowCase = o.lowerCaseTags;
+        sEmptyTrue = o.trueIsEmpty;
+        sAutoDate = o.autoDate;
+        sIgnorePrefixed = o.ignorePrefixNodes;
+        sParseValues = o.parseValues;
+        parserErrorHandler = o.parserErrorHandler;
+        return this.config();
       };
 
       this.stringToXml = function(xmlStr) {

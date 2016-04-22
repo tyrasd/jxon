@@ -65,6 +65,7 @@
         sLowCase = true,
         sEmptyTrue = true,
         sAutoDate = true,
+        sUseISO = false,
         sIgnorePrefixed = false,
         parserErrorHandler,
         DOMParser,
@@ -162,7 +163,11 @@
           oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toString())); /* verbosity level is 0 or 1 */
           if (oParentObj === oParentObj.valueOf()) { return; }
         } else if (oParentObj.constructor === Date) {
-          oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toGMTString()));
+          if ( sUseISO ) {
+            oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toISOString()));  
+          } else {
+            oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toGMTString()));
+          }
         }
 
         for (var sName in oParentObj) {
@@ -228,6 +233,7 @@
                 lowerCaseTags: sLowCase,
                 trueIsEmpty: sEmptyTrue,
                 autoDate: sAutoDate,
+                useISO: sUseISO,
                 ignorePrefixNodes: sIgnorePrefixed,
                 parseValues: sParseValues,
                 parserErrorHandler: parserErrorHandler
@@ -252,6 +258,9 @@
               break;
             case 'autoDate':
               sAutoDate = o.autoDate;
+              break;
+            case 'useISO':
+              sUseISO = o.useISO;
               break;
             case 'ignorePrefixedNodes':
               sIgnorePrefixed = o.ignorePrefixedNodes;

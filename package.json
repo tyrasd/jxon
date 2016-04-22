@@ -1,6 +1,6 @@
 {
   "name": "jxon",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "A complete, bidirectional, JXON library",
   "keywords": [
     "jxon",
@@ -48,5 +48,8 @@
     "chai": "^3.4.1",
     "mocha": "~2.1.0",
     "mocha-phantomjs": "^4.0.2"
+  },
+  "browser": {
+    "xmldom": false
   }
 }

@@ -20,22 +20,6 @@
  * adapted for nodejs and npm by Martin Raifer <tyr.asd@gmail.com>
  */
 
- /*
-  * Modifications:
-  * - added config method that excepts objects with props:
-  *   - valueKey (default: keyValue)
-  *   - attrKey (default: keyAttributes)
-  *   - attrPrefix (default: @)
-  *   - lowerCaseTags (default: true)
-  *   - trueIsEmpty (default: true)
-  *   - autoDate (default: true)
-  * - turning tag and attributes to lower case is optional
-  * - optional turning boolean true to empty tag
-  * - auto Date parsing is optional
-  * - added parseXml method
-  *
-*/
-
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.

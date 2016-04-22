@@ -39,7 +39,7 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(factory(window));
+        define([], factory(window));
     } else if (typeof exports === 'object') {
         if (typeof window === 'object' && window.DOMImplementation) {
             // Browserify. hardcode usage of browser's own XMLDom implementation
@@ -167,7 +167,7 @@
       }
 
       function loadObjTree (oXMLDoc, oParentEl, oParentObj) {
-        var vValue, oChild;
+        var vValue, oChild, elementNS;
 
         if (oParentObj.constructor === String || oParentObj.constructor === Number || oParentObj.constructor === Boolean) {
           oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toString())); /* verbosity level is 0 or 1 */
@@ -192,12 +192,20 @@
             oParentEl.setAttribute(sName.slice(1), vValue);
           } else if (vValue.constructor === Array) {
             for (var nItem = 0; nItem < vValue.length; nItem++) {
-              oChild = oXMLDoc.createElementNS(vValue[nItem][opts.attrPrefix+'xmlns'] || oParentEl.namespaceURI, sName);
+              elementNS = vValue[nItem][opts.attrsPref+'xmlns'] || oParentEl.namespaceURI;
+              if (elementNS)
+                oChild = oXMLDoc.createElementNS(elementNS, sName);
+              else
+                oChild = oXMLDoc.createElement(sName);
               loadObjTree(oXMLDoc, oChild, vValue[nItem]);
               oParentEl.appendChild(oChild);
             }
           } else {
-            oChild = oXMLDoc.createElementNS((vValue || {})[opts.attrPrefix+'xmlns'] || oParentEl.namespaceURI, sName);
+            elementNS = (vValue || {})[opts.attrsPref+'xmlns'] || oParentEl.namespaceURI;
+            if (elementNS)
+              oChild = oXMLDoc.createElementNS(elementNS, sName);
+            else
+              oChild = oXMLDoc.createElement(sName);
             if (vValue instanceof Object) {
               loadObjTree(oXMLDoc, oChild, vValue);
             } else if (vValue !== null && vValue !== true) {

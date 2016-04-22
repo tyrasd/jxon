@@ -80,5 +80,48 @@ describe('JXON', function(){
             var str = JXON.jsToString(obj);
             assert.equal(str, '<test xmlns="foo" xmlns:y="moo"/>');
         });
+        it('as property', function() { // addigional test from #26
+            var strNull = JXON.jsToString({
+              'TrainingCenterDatabase': {
+                '$xmlns:ns2': '1',
+                '$xmlns:xsi': '2',
+                '$xmlns:ns4': '3',
+                '$xmlns:ns5': '4',
+                '$xmlns:tpx': '5',
+                '$xmlns': '6',
+                'Activities': [],
+                'Author': {
+                  '$xsi:type': 'Application_t',
+                  'Name': 'test',
+                  'Build': {
+                    'Version': {
+                      'VersionMajor': 80
+                    }
+                  },
+                  'LangID': 'en'
+                }
+              }
+            });
+            var strEmptyObj =
+              '<TrainingCenterDatabase' +
+                  ' xmlns:ns2="1"' +
+                  ' xmlns:xsi="2"' +
+                  ' xmlns:ns4="3"' +
+                  ' xmlns:ns5="4"' +
+                  ' xmlns:tpx="5"' +
+                  ' xmlns="6">' +
+                '<Author' +
+                    ' xsi:type="Application_t">' +
+                  '<Name>test</Name>' +
+                  '<Build>' +
+                    '<Version>' +
+                      '<VersionMajor>80</VersionMajor>' +
+                    '</Version>' +
+                  '</Build>' +
+                  '<LangID>en</LangID>' +
+                '</Author>' +
+              '</TrainingCenterDatabase>';
+            assert.equal(strNull, strEmptyObj);
+        });
     });
-})
+});

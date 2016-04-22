@@ -173,7 +173,7 @@
           oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toString())); /* verbosity level is 0 or 1 */
           if (oParentObj === oParentObj.valueOf()) { return; }
         } else if (oParentObj.constructor === Date) {
-          oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toGMTString()));
+          oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toISOString()));  
         }
 
         for (var sName in oParentObj) {
@@ -182,7 +182,7 @@
           if (isFinite(sName) || vValue instanceof Function) { continue; } /* verbosity level is 0 */
           // when it is _
           if (sName === opts.valueKey) {
-            if (vValue !== null && vValue !== true) { oParentEl.appendChild(oXMLDoc.createTextNode(vValue.constructor === Date ? vValue.toGMTString() : String(vValue))); }
+            if (vValue !== null && vValue !== true) { oParentEl.appendChild(oXMLDoc.createTextNode(vValue.constructor === Date ? vValue.toISOString() : String(vValue))); }
           } else if (sName === opts.attrKey) { /* verbosity level is 3 */
             for (var sAttrib in vValue) { oParentEl.setAttribute(sAttrib, vValue[sAttrib]); }
           } else if (sName === opts.attrPrefix + 'xmlns' && isNode) {

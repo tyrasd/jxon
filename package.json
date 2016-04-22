@@ -1,6 +1,6 @@
 {
   "name": "jxon",
-  "version": "2.0.0",
+  "version": "2.0.0-beta.1",
   "description": "A complete, bidirectional, JXON library",
   "keywords": [
     "jxon",
@@ -41,7 +41,6 @@
   },
   "license": "GPL v3",
   "dependencies": {
-    "mocha-phantomjs": "^4.0.2",
     "xmldom": "^0.1.21"
   },
   "devDependencies": {

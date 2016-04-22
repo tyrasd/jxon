@@ -112,3 +112,13 @@ jxon.each(jx.val, function(val) {
     assert(val, 'foo');
 });
 ```
+
+# CHANGELOG
+
+## 2.0.0
+
+changes from version 1.x to 2.0 include:
+
+* (breaking:) more usefull default settings (see above)
+* (breaking:) stringify Dates to ISO format instead of GMT
+* improved xml namespace handling on node and browsers

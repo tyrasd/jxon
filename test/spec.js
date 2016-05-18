@@ -1,6 +1,6 @@
 var assert = require("assert"),
     fs = require('fs'),
-    JXON = require('../index'),
+    JXON = require('../jxon'),
     xmlString = require('./example.xml.json'),
     jsObj = {
         root: {

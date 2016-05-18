@@ -17,7 +17,7 @@
     "json to xml",
     "json2xml"
   ],
-  "main": "index.js",
+  "main": "jxon.js",
   "scripts": {
     "pretest": "npm ls --depth=Infinity > /dev/null",
     "test": "npm run test-node && npm run test-webkit",

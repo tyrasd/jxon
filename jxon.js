@@ -28,15 +28,18 @@
     if (typeof window === 'object' && window.DOMImplementation) {
       // Browserify. hardcode usage of browser's own XMLDom implementation
       // see https://github.com/tyrasd/jxon/issues/18
+
       module.exports = factory(window);
     } else {
       // Node. Does not work with strict CommonJS, but
       // only CommonJS-like environments that support module.exports,
       // like Node.
+
       module.exports = factory(require('xmldom'), true);
     }
   } else {
     // Browser globals (root is window)
+
     root.JXON = factory(window);
   }
 }(this, function(xmlDom, isNode) {
@@ -56,8 +59,10 @@
   var DOMParser;
 
   return new (function() {
+
     this.config = function(cfg) {
       for (var k in cfg) {
+
         opts[k] = cfg[k];
       }
       if (opts.parserErrorHandler) {
@@ -66,32 +71,38 @@
           locator: {}
         });
       }
+
     };
 
     function parseText(sValue) {
       if (!opts.parseValues) {
         return sValue;
       }
+
       if (rIsNull.test(sValue)) {
         return null;
       }
+
       if (rIsBool.test(sValue)) {
         return sValue.toLowerCase() === "true";
       }
+
       if (isFinite(sValue)) {
         return parseFloat(sValue);
       }
+
       if (opts.autoDate && isFinite(Date.parse(sValue))) {
         return new Date(sValue);
       }
+
       return sValue;
     }
-
     function EmptyTree() {
     }
     EmptyTree.prototype.toString = function() {
       return "null";
     };
+
     EmptyTree.prototype.valueOf = function() {
       return null;
     };
@@ -99,7 +110,6 @@
     function objectify(vValue) {
       return vValue === null ? new EmptyTree() : vValue instanceof Object ? vValue : new vValue.constructor(vValue);
     }
-
     function createObjTree(oParentNode, nVerb, bFreeze, bNesteAttr) {
       var nLevelStart = aCache.length,
         bChildren = oParentNode.hasChildNodes(),
@@ -112,18 +122,24 @@
         sCollectedTxt = "",
         vResult = bHighVerb ? {} : /* put here the default value for empty nodes: */ (opts.trueIsEmpty ? true : '');
 
+      var CDATA = 4,
+        TEXT = 3,
+        ELEMENT = 1;
+
       if (bChildren) {
         for (var oNode, nItem = 0; nItem < oParentNode.childNodes.length; nItem++) {
+
           oNode = oParentNode.childNodes.item(nItem);
-          if (oNode.nodeType === 4) {
+          if (oNode.nodeType === CDATA) {
             sCollectedTxt += oNode.nodeValue;
           } /* nodeType is "CDATASection" (4) */
-          else if (oNode.nodeType === 3) {
+          else if (oNode.nodeType === TEXT) {
             sCollectedTxt += oNode.nodeValue.trim();
           } /* nodeType is "Text" (3) */
-          else if (oNode.nodeType === 1 && !(opts.ignorePrefixedNodes && oNode.prefix)) {
+          else if (oNode.nodeType === ELEMENT && !(opts.ignorePrefixedNodes && oNode.prefix)) {
             aCache.push(oNode);
-          } /* nodeType is "Element" (1) */
+          }
+        /* nodeType is "Element" (1) */
         }
       }
 
@@ -135,18 +151,22 @@
       }
 
       for (var nElId = nLevelStart; nElId < nLevelEnd; nElId++) {
+
         sProp = aCache[nElId].nodeName;
         if (opts.lowerCaseTags) {
           sProp = sProp.toLowerCase();
         }
+
         vContent = createObjTree(aCache[nElId], nVerb, bFreeze, bNesteAttr);
         if (vResult.hasOwnProperty(sProp)) {
           if (vResult[sProp].constructor !== Array) {
             vResult[sProp] = [vResult[sProp]];
           }
+
           vResult[sProp].push(vContent);
         } else {
           vResult[sProp] = vContent;
+
           nLength++;
         }
       }
@@ -157,11 +177,14 @@
           oAttrParent = bNesteAttr ? {} : vResult;
 
         for (var oAttrib, oAttribName, nAttrib = 0; nAttrib < nAttrLen; nLength++, nAttrib++) {
+
           oAttrib = oParentNode.attributes.item(nAttrib);
+
           oAttribName = oAttrib.name;
           if (opts.lowerCaseTags) {
             oAttribName = oAttribName.toLowerCase();
           }
+
           oAttrParent[sAPrefix + oAttribName] = parseText(oAttrib.value.trim());
         }
 
@@ -169,9 +192,12 @@
           if (bFreeze) {
             Object.freeze(oAttrParent);
           }
+
           vResult[opts.attrKey] = oAttrParent;
+
           nLength -= nAttrLen - 1;
         }
+
       }
 
       if (nVerb === 3 || (nVerb === 2 || nVerb === 1 && nLength > 0) && sCollectedTxt) {
@@ -179,7 +205,6 @@
       } else if (!bHighVerb && nLength === 0 && sCollectedTxt) {
         vResult = vBuiltVal;
       }
-
       if (bFreeze && (bHighVerb || nLength > 0)) {
         Object.freeze(vResult);
       }
@@ -188,7 +213,6 @@
 
       return vResult;
     }
-
     function loadObjTree(oXMLDoc, oParentEl, oParentObj) {
       var vValue,
         oChild,
@@ -199,23 +223,28 @@
         if (oParentObj === oParentObj.valueOf()) {
           return;
         }
+
       } else if (oParentObj.constructor === Date) {
         oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toISOString()));
       }
-
       for (var sName in oParentObj) {
+
         vValue = oParentObj[sName];
         if (vValue === null) {
           vValue = {};
         }
+
         if (isFinite(sName) || vValue instanceof Function) {
           continue;
-        } /* verbosity level is 0 */
+        }
+
+        /* verbosity level is 0 */
         // when it is _
         if (sName === opts.valueKey) {
           if (vValue !== null && vValue !== true) {
             oParentEl.appendChild(oXMLDoc.createTextNode(vValue.constructor === Date ? vValue.toISOString() : String(vValue)));
           }
+
         } else if (sName === opts.attrKey) { /* verbosity level is 3 */
           for (var sAttrib in vValue) {
             oParentEl.setAttribute(sAttrib, vValue[sAttrib]);
@@ -227,6 +256,7 @@
           oParentEl.setAttribute(sName.slice(1), vValue);
         } else if (vValue.constructor === Array) {
           for (var nItem = 0; nItem < vValue.length; nItem++) {
+
             elementNS = vValue[nItem][opts.attrsPref + 'xmlns'] || oParentEl.namespaceURI;
             if (elementNS) {
               oChild = oXMLDoc.createElementNS(elementNS, sName);
@@ -255,7 +285,6 @@
         }
       }
     }
-
     this.xmlToJs = this.build = function(oXMLParent, nVerbosity /* optional */ , bFreeze /* optional */ , bNesteAttributes /* optional */ ) {
       var _nVerb = arguments.length > 1 && typeof nVerbosity === "number" ? nVerbosity & 3 : /* put here the default verbosity level: */ 1;
       return createObjTree(oXMLParent, _nVerb, bFreeze || false, arguments.length > 3 ? bNesteAttributes : _nVerb === 3);
@@ -272,6 +301,7 @@
       if (!DOMParser) {
         DOMParser = new xmlDom.DOMParser();
       }
+
       return DOMParser.parseFromString(xmlStr, 'application/xml');
     };
 
@@ -303,4 +333,6 @@
     };
   })();
 
-}));
+}
+
+));

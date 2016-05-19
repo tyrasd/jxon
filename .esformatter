@@ -9,7 +9,8 @@
     "esformatter-braces",
     "esformatter-dot-notation",
     "esformatter-semicolons",
-    "esformatter-remove-trailing-commas"
+    "esformatter-remove-trailing-commas",
+    "esformatter-eol-last"
   ],
 
   "indent": {

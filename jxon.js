@@ -71,7 +71,6 @@
           locator: {}
         });
       }
-
     };
 
     function parseText(sValue) {
@@ -84,7 +83,7 @@
       }
 
       if (rIsBool.test(sValue)) {
-        return sValue.toLowerCase() === "true";
+        return sValue.toLowerCase() === 'true';
       }
 
       if (isFinite(sValue)) {
@@ -100,7 +99,7 @@
     function EmptyTree() {
     }
     EmptyTree.prototype.toString = function() {
-      return "null";
+      return 'null';
     };
 
     EmptyTree.prototype.valueOf = function() {
@@ -110,21 +109,20 @@
     function objectify(vValue) {
       return vValue === null ? new EmptyTree() : vValue instanceof Object ? vValue : new vValue.constructor(vValue);
     }
+
     function createObjTree(oParentNode, nVerb, bFreeze, bNesteAttr) {
-      var nLevelStart = aCache.length,
-        bChildren = oParentNode.hasChildNodes(),
-        bAttributes = oParentNode.nodeType === oParentNode.ELEMENT_NODE && oParentNode.hasAttributes(),
-        bHighVerb = Boolean(nVerb & 2);
-
-      var sProp,
-        vContent,
-        nLength = 0,
-        sCollectedTxt = "",
-        vResult = bHighVerb ? {} : /* put here the default value for empty nodes: */ (opts.trueIsEmpty ? true : '');
-
       var CDATA = 4,
         TEXT = 3,
-        ELEMENT = 1;
+        ELEMENT = 1,
+        nLevelStart = aCache.length,
+        bChildren = oParentNode.hasChildNodes(),
+        bAttributes = oParentNode.nodeType === oParentNode.ELEMENT_NODE && oParentNode.hasAttributes(),
+        bHighVerb = Boolean(nVerb & 2),
+        nLength = 0,
+        sCollectedTxt = '',
+        vResult = bHighVerb ? {} : /* put here the default value for empty nodes: */ (opts.trueIsEmpty ? true : ''),
+        sProp,
+        vContent;
 
       if (bChildren) {
         for (var oNode, nItem = 0; nItem < oParentNode.childNodes.length; nItem++) {
@@ -173,7 +171,7 @@
 
       if (bAttributes) {
         var nAttrLen = oParentNode.attributes.length,
-          sAPrefix = bNesteAttr ? "" : opts.attrPrefix,
+          sAPrefix = bNesteAttr ? '' : opts.attrPrefix,
           oAttrParent = bNesteAttr ? {} : vResult;
 
         for (var oAttrib, oAttribName, nAttrib = 0; nAttrib < nAttrLen; nLength++, nAttrib++) {
@@ -288,13 +286,13 @@
       }
     }
     this.xmlToJs = this.build = function(oXMLParent, nVerbosity /* optional */ , bFreeze /* optional */ , bNesteAttributes /* optional */ ) {
-      var _nVerb = arguments.length > 1 && typeof nVerbosity === "number" ? nVerbosity & 3 : /* put here the default verbosity level: */ 1;
+      var _nVerb = arguments.length > 1 && typeof nVerbosity === 'number' ? nVerbosity & 3 : /* put here the default verbosity level: */ 1;
       return createObjTree(oXMLParent, _nVerb, bFreeze || false, arguments.length > 3 ? bNesteAttributes : _nVerb === 3);
     };
 
     this.jsToXml = this.unbuild = function(oObjTree, sNamespaceURI /* optional */ , sQualifiedName /* optional */ , oDocumentType /* optional */ ) {
       var documentImplementation = xmlDom.document && xmlDom.document.implementation || new xmlDom.DOMImplementation();
-      var oNewDoc = documentImplementation.createDocument(sNamespaceURI || null, sQualifiedName || "", oDocumentType || null);
+      var oNewDoc = documentImplementation.createDocument(sNamespaceURI || null, sQualifiedName || '', oDocumentType || null);
       loadObjTree(oNewDoc, oNewDoc.documentElement || oNewDoc, oObjTree);
       return oNewDoc;
     };
@@ -308,7 +306,7 @@
     };
 
     this.xmlToString = function(xmlObj) {
-      if (typeof xmlObj.xml !== "undefined") {
+      if (typeof xmlObj.xml !== 'undefined') {
         return xmlObj.xml;
       } else {
         return (new xmlDom.XMLSerializer()).serializeToString(xmlObj);

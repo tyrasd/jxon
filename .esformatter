@@ -13,6 +13,11 @@
     "esformatter-eol-last"
   ],
 
+  "quotes": {
+    "type": "single",
+    "avoidEscape": false
+  },
+
   "indent": {
     "value": "  ",
     "alignComments": true,

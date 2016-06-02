@@ -237,7 +237,6 @@
         }
 
         /* verbosity level is 0 */
-        // when it is _
         if (sName === opts.valueKey) {
           if (vValue !== null && vValue !== true) {
             oParentEl.appendChild(oXMLDoc.createTextNode(vValue.constructor === Date ? vValue.toISOString() : String(vValue)));

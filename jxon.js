@@ -249,25 +249,27 @@
           for (var sAttrib in vValue) {
             oParentEl.setAttribute(sAttrib, vValue[sAttrib]);
           }
-        } else if (sName === opts.attrPrefix + 'xmlns' && isNodeJs) {
-          oParentEl.setAttribute(sName.slice(1), vValue);
+        } else if (sName === opts.attrPrefix + 'xmlns') {
+          if (isNodeJs) {
+            oParentEl.setAttribute(sName.slice(1), vValue);
+          }
         // do nothing: special handling of xml namespaces is done via createElementNS()
         } else if (sName.charAt(0) === opts.attrPrefix) {
           oParentEl.setAttribute(sName.slice(1), vValue);
         } else if (vValue.constructor === Array) {
           for (var nItem = 0; nItem < vValue.length; nItem++) {
-
-            elementNS = vValue[nItem][opts.attrsPref + 'xmlns'] || oParentEl.namespaceURI;
+            elementNS = vValue[nItem][opts.attrPrefix + 'xmlns'] || oParentEl.namespaceURI;
             if (elementNS) {
               oChild = oXMLDoc.createElementNS(elementNS, sName);
             } else {
               oChild = oXMLDoc.createElement(sName);
             }
+
             loadObjTree(oXMLDoc, oChild, vValue[nItem]);
             oParentEl.appendChild(oChild);
           }
         } else {
-          elementNS = (vValue || {})[opts.attrsPref + 'xmlns'] || oParentEl.namespaceURI;
+          elementNS = (vValue || {})[opts.attrPrefix + 'xmlns'] || oParentEl.namespaceURI;
           if (elementNS) {
             oChild = oXMLDoc.createElementNS(elementNS, sName);
           } else {

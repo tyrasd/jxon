@@ -1,4 +1,4 @@
-var assert = require("assert"),
+var assert = require('chai').assert,
   fs = require('fs'),
   JXON = require('../jxon'),
   xmlString = require('./example.xml.json'),
@@ -67,13 +67,13 @@ describe('JXON', function() {
     it('one node should iterate', function() {
       var jx = JXON.stringToJs('<val>foo</val>');
       JXON.each(jx.val, function(val) {
-        assert(val, 'foo');
+        assert.equal(val, 'foo');
       });
     });
     it('multiple nodes should iterate', function() {
-      var jx = JXON.stringToJs('<val>foo</val><val>foo</val>');
-      JXON.each(jx.val, function(val) {
-        assert(val, 'foo');
+      var jx = JXON.stringToJs('<root><val>foo</val><val>foo</val></root>');
+      JXON.each(jx.root.val, function(val) {
+        assert.equal(val, 'foo');
       });
     });
   });
@@ -91,43 +91,22 @@ describe('JXON', function() {
     it('as property', function() { // addigional test from #26
       var strNull = JXON.jsToString({
         'TrainingCenterDatabase': {
+          '$xmlns': '6',
           '$xmlns:ns2': '1',
           '$xmlns:xsi': '2',
           '$xmlns:ns4': '3',
           '$xmlns:ns5': '4',
-          '$xmlns:tpx': '5',
-          '$xmlns': '6',
-          'Activities': [],
-          'Author': {
-            '$xsi:type': 'Application_t',
-            'Name': 'test',
-            'Build': {
-              'Version': {
-                'VersionMajor': 80
-              }
-            },
-            'LangID': 'en'
-          }
+          '$xmlns:tpx': '5'
         }
       });
       var strEmptyObj = '<TrainingCenterDatabase' +
+        ' xmlns="6"' +
         ' xmlns:ns2="1"' +
         ' xmlns:xsi="2"' +
         ' xmlns:ns4="3"' +
         ' xmlns:ns5="4"' +
-        ' xmlns:tpx="5"' +
-        ' xmlns="6">' +
-        '<Author' +
-        ' xsi:type="Application_t">' +
-        '<Name>test</Name>' +
-        '<Build>' +
-        '<Version>' +
-        '<VersionMajor>80</VersionMajor>' +
-        '</Version>' +
-        '</Build>' +
-        '<LangID>en</LangID>' +
-        '</Author>' +
-        '</TrainingCenterDatabase>';
+        ' xmlns:tpx="5"/>';
+
       assert.equal(strNull, strEmptyObj);
     });
   });

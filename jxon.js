@@ -42,7 +42,7 @@
 
     root.JXON = factory(window);
   }
-}(this, function(xmlDom, isNode) {
+}(this, function(xmlDom, isNodeJs) {
   var opts = {
     valueKey: '_',
     attrKey: '$',
@@ -249,7 +249,7 @@
           for (var sAttrib in vValue) {
             oParentEl.setAttribute(sAttrib, vValue[sAttrib]);
           }
-        } else if (sName === opts.attrPrefix + 'xmlns' && isNode) {
+        } else if (sName === opts.attrPrefix + 'xmlns' && isNodeJs) {
           oParentEl.setAttribute(sName.slice(1), vValue);
         // do nothing: special handling of xml namespaces is done via createElementNS()
         } else if (sName.charAt(0) === opts.attrPrefix) {

@@ -254,15 +254,15 @@
         } else if (sName.charAt(0) === opts.attrPrefix) {
           oParentEl.setAttribute(sName.slice(1), vValue);
         } else if (vValue.constructor === Array) {
-          for (var nItem = 0; nItem < vValue.length; nItem++) {
-            elementNS = vValue[nItem][opts.attrPrefix + 'xmlns'] || oParentEl.namespaceURI;
+          for (var nItem in vValue) {
+            elementNS = (vValue[nItem] && vValue[nItem][opts.attrPrefix + 'xmlns']) || oParentEl.namespaceURI;
             if (elementNS) {
               oChild = oXMLDoc.createElementNS(elementNS, sName);
             } else {
               oChild = oXMLDoc.createElement(sName);
             }
 
-            loadObjTree(oXMLDoc, oChild, vValue[nItem]);
+            loadObjTree(oXMLDoc, oChild, vValue[nItem] || {});
             oParentEl.appendChild(oChild);
           }
         } else {

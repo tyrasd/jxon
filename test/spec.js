@@ -62,6 +62,41 @@ describe('JXON', function() {
       });
       assert.equal(strNull, strEmptyObj);
     });
+
+    it('deal with pure arrays with jumped indexes', function() {
+      var myArray = [];
+
+      myArray[1] = 'first position';
+      myArray[4] = 'second position';
+
+      var strOne = JXON.jsToString({
+        element: {
+          a: myArray
+        }
+      });
+
+      var strTwo = JXON.jsToString(JXON.stringToJs('<element><a>first position</a><a>second position</a></element>'));
+      
+      assert.equal(strOne, strTwo);
+    });
+
+    it('deal with pure arrays with jumped indexes and null values', function() {
+      var myArray = [];
+
+      myArray[1] = 'first position';
+      myArray[2] = null;
+      myArray[4] = 'third position';
+
+      var strOne = JXON.jsToString({
+        element: {
+          a: myArray
+        }
+      });
+
+      var strTwo = JXON.jsToString(JXON.stringToJs('<element><a>first position</a><a /><a>third position</a></element>'));
+
+      assert.equal(strOne, strTwo);
+    });
   });
   describe('.each', function() {
     it('one node should iterate', function() {

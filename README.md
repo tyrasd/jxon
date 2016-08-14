@@ -119,6 +119,7 @@ jxon.each(jx.val, function(val) {
 
 changes from version 1.x to 2.0 include:
 
-* (breaking:) more usefull default settings (see above)
-* (breaking:) stringify Dates to ISO format instead of GMT
+* (breaking) more usefull default settings (see above)
+* (breaking) stringify Dates to ISO format instead of GMT
 * improved xml namespace handling on node and browsers
+* renamed main source file to `jxon.js`

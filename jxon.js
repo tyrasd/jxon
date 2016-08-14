@@ -17,7 +17,10 @@
  * some additions and modifications by user @igord
  * https://github.com/tyrasd/JXON/pull/5/commits
  *
- * adapted for nodejs and npm by Martin Raifer <tyr.asd@gmail.com>
+ * bugfixes and code cleanup by user @laubstein
+ * https://github.com/tyrasd/jxon/pull/32
+ *
+ * adapted for nodejs and npm by @tyrasd (Martin Raifer <tyr.asd@gmail.com>) 
  */
 
 (function(root, factory) {

@@ -91,11 +91,11 @@ var myObject = JXON.unbuild(myObject);
 ```
 
 ### .stringToXml(xmlString)
-**Implementation of DOMParser.parseFromString, converts string to XML document.**
+**Wrapper over DOMParser.parseFromString, converts string to XML document.**
 - xmlString - XML string to convert to XML document
 
 ### .xmlToString(xmlObj)
-**Implementation of XMLSerializer.serializeToString, converts XML document to string.**
+**Wrapper over XMLSerializer.serializeToString, converts XML document to string.**
 - xmlObj - XML document to convert to XML string
 
 ### .each(obj, callback[, thisArg])

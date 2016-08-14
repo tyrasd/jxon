@@ -1,0 +1,16 @@
+{
+  "env": {},
+  "globals": {},
+
+  "rules": {
+    "indent": ["error", 2],
+    "no-multiple-empty-lines": ["error", {"max": 2, "maxEOF": 1, "maxBOF": 1}],
+    "quotes": [2, "single"],
+    "eqeqeq": ["error", "smart"],
+    "no-alert": "error",
+    "no-magic-numbers": ["error", { "ignore": [0, 1, 2, 3] }],
+    "no-multi-spaces": "error",
+    "no-shadow": ["error", { "builtinGlobals": false, "hoist": "functions", "allow": [] }],
+    "linebreak-style": ["error", "unix"]
+  }
+}

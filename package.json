@@ -17,12 +17,13 @@
     "json to xml",
     "json2xml"
   ],
-  "main": "index.js",
+  "main": "jxon.js",
   "scripts": {
     "pretest": "npm ls --depth=Infinity > /dev/null",
     "test": "npm run test-node && npm run test-webkit",
     "test-node": "mocha test/spec.js",
-    "test-webkit": "browserify test/spec.js > test/spec.browserify.js && mocha-phantomjs test/index.html"
+    "test-webkit": "browserify test/spec.js > test/spec.browserify.js && mocha-phantomjs test/index.html",
+    "minify": "uglifyjs jxon.js --comments all --ascii --mangle --output jxon.min.js"
   },
   "author": "MDN (https://developer.mozilla.org/en-US/docs/JXON)",
   "contributors": [

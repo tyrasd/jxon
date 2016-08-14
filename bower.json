@@ -7,7 +7,7 @@
     "xml to js", "xml2js", "xml to json", "xml2json",
     "js to xml", "js2xml", "json to xml", "json2xml"
   ],
-  "main": "index.js",
+  "main": "jxon.js",
   "authors": [{
     "name": "MDN (https://developer.mozilla.org/en-US/docs/JXON)"
   }, {

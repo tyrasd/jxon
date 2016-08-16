@@ -20,7 +20,7 @@
  * bugfixes and code cleanup by user @laubstein
  * https://github.com/tyrasd/jxon/pull/32
  *
- * adapted for nodejs and npm by @tyrasd (Martin Raifer <tyr.asd@gmail.com>) 
+ * adapted for nodejs and npm by @tyrasd (Martin Raifer <tyr.asd@gmail.com>)
  */
 
 (function(root, factory) {
@@ -54,11 +54,16 @@
     trueIsEmpty: false,
     autoDate: false,
     ignorePrefixedNodes: false,
-    parseValues: false
+    parseValues: false,
+    forceXmlProlog: false,
+    defaultXmlProlog: '<?xml version="1.0" encoding="UTF-8"?>'
   };
   var aCache = [];
   var rIsNull = /^\s*$/;
   var rIsBool = /^(?:true|false)$/i;
+  var rXmlProlog = /^(<\?xml.*?\?>)/;
+  var rXmlPrologAttributes = /\b(version|encoding|standalone)="([^"]+?)"/g;
+  var oXmlProlog = {};
   var DOMParser;
 
   return new (function() {
@@ -74,6 +79,56 @@
           locator: {}
         });
       }
+    };
+
+    /**
+     * Helper function: given a xml prolog (eg: <?xml version="1.0"?>),
+     * returns a object (eg: { version: "1.0" }).
+     */
+    function getPrologFromString(sXmlProlog) {
+      var matches = sXmlProlog.match(rXmlPrologAttributes);
+      var oReturn = {};
+      for (var i = 0; i < matches.length; i++) {
+        var currentAttribute = matches[i].split('=');
+        oReturn[currentAttribute[0]] = currentAttribute[1].replace(/["]/g, '');
+      }
+
+      return oReturn;
+    };
+
+    /**
+     * Helper function: given an object representing a xml prolog (eg: { version: "1.0", encoding: "UTF-8", standalone: "true" }),
+     * returns a string (eg: <?xml version="1.0" encoding="UTF-8" standalone="true"?>).
+     */
+    function getPrologFromObject(oProlog) {
+      var ret = [];
+      for (var prop in oProlog) {
+        if (oProlog.hasOwnProperty(prop)) {
+          ret.push(prop + '="' + oProlog[prop] + '"');
+        }
+      }
+
+      return ret.length ? '<?xml ' + ret.join(' ') + '?>' : '';
+    };
+
+    /**
+     * Helper function: check for empty object
+     */
+    function isEmptyObject(obj) {
+      for (var prop in obj) {
+        if (obj.hasOwnProperty(prop)) {
+          return false;
+        }
+      }
+
+      return true && JSON.stringify(obj) === JSON.stringify({});
+    };
+
+    /**
+     * Helper function: clone a object
+     */
+    function cloneObject(obj) {
+      return JSON.parse(JSON.stringify(obj));
     };
 
     function parseText(sValue) {
@@ -253,7 +308,12 @@
           if (isNodeJs) {
             oParentEl.setAttribute(sName.slice(1), vValue);
           }
-        // do nothing: special handling of xml namespaces is done via createElementNS()
+          // do nothing: special handling of xml namespaces is done via createElementNS()
+        } else if (sName === opts.attrPrefix + 'xmlProlog') {
+          // store xmlProlog
+          if (vValue) {
+            oXmlProlog = cloneObject(vValue);
+          }
         } else if (sName.charAt(0) === opts.attrPrefix) {
           oParentEl.setAttribute(sName.slice(1), vValue);
         } else if (vValue.constructor === Array) {
@@ -289,7 +349,14 @@
     }
     this.xmlToJs = this.build = function(oXMLParent, nVerbosity /* optional */ , bFreeze /* optional */ , bNesteAttributes /* optional */ ) {
       var _nVerb = arguments.length > 1 && typeof nVerbosity === 'number' ? nVerbosity & 3 : /* put here the default verbosity level: */ 1;
-      return createObjTree(oXMLParent, _nVerb, bFreeze || false, arguments.length > 3 ? bNesteAttributes : _nVerb === 3);
+      var oTree = createObjTree(oXMLParent, _nVerb, bFreeze || false, arguments.length > 3 ? bNesteAttributes : _nVerb === 3);
+
+      if (!isEmptyObject(oXmlProlog)) {
+        oTree[opts.attrPrefix + 'xmlProlog'] = cloneObject(oXmlProlog);
+        oXmlProlog = {};
+      }
+
+      return oTree;
     };
 
     this.jsToXml = this.unbuild = function(oObjTree, sNamespaceURI /* optional */ , sQualifiedName /* optional */ , oDocumentType /* optional */ ) {
@@ -304,15 +371,28 @@
         DOMParser = new xmlDom.DOMParser();
       }
 
+      if (rXmlProlog.test(xmlStr)) {
+        oXmlProlog = getPrologFromString(xmlStr.match(rXmlProlog)[0]);
+      }
+
       return DOMParser.parseFromString(xmlStr, 'application/xml');
     };
 
     this.xmlToString = function(xmlObj) {
+      var sReturn = '';
+
       if (typeof xmlObj.xml !== 'undefined') {
-        return xmlObj.xml;
+        sReturn = xmlObj.xml;
       } else {
-        return (new xmlDom.XMLSerializer()).serializeToString(xmlObj);
+        sReturn = (new xmlDom.XMLSerializer()).serializeToString(xmlObj);
       }
+
+      // if the original string has a prolog we include them, else we check the forceXmlProlog option
+      if (!rXmlProlog.test(sReturn) && (!isEmptyObject(oXmlProlog) || opts.forceXmlProlog)) {
+        sReturn = (getPrologFromObject(oXmlProlog) || opts.defaultXmlProlog) + sReturn;
+      }
+
+      return sReturn;
     };
 
     this.stringToJs = function(str) {

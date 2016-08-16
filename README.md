@@ -9,7 +9,7 @@ Implementation of Mozilla's [JXON](https://developer.mozilla.org/en-US/docs/JXON
 #### Example:
 
 ```js
-{name: 'myportal'} 
+{name: 'myportal'}
 <name>myportal</name>
 
 {user: {
@@ -56,7 +56,9 @@ trueIsEmpty: false,
 autoDate: false,
 ignorePrefixedNodes: false,
 parseValues: false,
-parserErrorHandler: undefined
+parserErrorHandler: undefined,
+forceXmlProlog: false,
+defaultXmlProlog: '<?xml version="1.0" encoding="UTF-8"?>'
 ```
 
 ### .stringToJs(xmlString)
@@ -73,7 +75,7 @@ parserErrorHandler: undefined
 - verbosity - Optional verbosity level of conversion, from 0 to 3. It is almost equivalent to our algorithms from #4 to #1 (default value is 1, which is equivalent to the algorithm #3).
 - freeze - Optional boolean expressing whether the created object must be freezed or not (default value is false).
 - nestedAttributes - Optional boolean expressing whether the the nodeAttributes must be nested into a child-object named keyAttributes or not (default value is false for verbosity levels from 0 to 2; true for verbosity level 3).
- 
+
 Example:
 ```js
 var myObject = JXON.build(xmlDoc);
@@ -84,7 +86,7 @@ var myObject = JXON.build(xmlDoc);
 - namespaceURI - Optional DOMString containing the namespace URI of the document to be created, or null if the document doesn't belong to one.
 - qualifiedNameStr - Optional DOMString containing the qualified name, that is an optional prefix and colon plus the local root element name, of the document to be created.
 - documentType - Optional DocumentType of the document to be created. It defaults to null.
- 
+
 Example:
 ```js
 var myObject = JXON.unbuild(myObject);
@@ -122,4 +124,5 @@ changes from version 1.x to 2.0 include:
 * (breaking) more usefull default settings (see above)
 * (breaking) stringify Dates to ISO format instead of GMT
 * improved xml namespace handling on node and browsers
+* improved xml prolog handling
 * renamed main source file to `jxon.js`

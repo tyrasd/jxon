@@ -61,7 +61,7 @@
   var aCache = [];
   var rIsNull = /^\s*$/;
   var rIsBool = /^(?:true|false)$/i;
-  var rXmlProlog = /^(<\?xml.*?\?>)/;
+  var rXmlProlog = /^(<\?xml.*?\?>[\n]?)/;
   var rXmlPrologAttributes = /\b(version|encoding|standalone)="([^"]+?)"/g;
   var oXmlProlog = {};
   var DOMParser;
@@ -387,9 +387,14 @@
         sReturn = (new xmlDom.XMLSerializer()).serializeToString(xmlObj);
       }
 
-      // if the original string has a prolog we include them, else we check the forceXmlProlog option
-      if (!rXmlProlog.test(sReturn) && (!isEmptyObject(oXmlProlog) || opts.forceXmlProlog)) {
-        sReturn = (getPrologFromObject(oXmlProlog) || opts.defaultXmlProlog) + sReturn;
+      // if the original string has a prolog or forceXmlProlog option is true, we include a new one or replace the existent
+      if (!isEmptyObject(oXmlProlog) || opts.forceXmlProlog) {
+        if (rXmlProlog.test(sReturn)) {
+          // replace the prolog
+          sReturn = sReturn.replace(rXmlProlog, (getPrologFromObject(oXmlProlog) || opts.defaultXmlProlog));
+        } else {
+          sReturn = (getPrologFromObject(oXmlProlog) || opts.defaultXmlProlog) + sReturn;
+        }
       }
 
       return sReturn;

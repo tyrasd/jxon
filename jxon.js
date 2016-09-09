@@ -231,7 +231,7 @@
       for (var sName in oParentObj) {
 
         vValue = oParentObj[sName];
-        if (vValue === null) {
+        if ( vValue === undefined || vValue === null ) {
           vValue = {};
         }
 

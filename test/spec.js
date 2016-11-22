@@ -97,6 +97,18 @@ describe('JXON', function() {
 
       assert.equal(strOne, strTwo);
     });
+    it('skip undefined properties', function() {
+      var strUndefined = JXON.jsToString({
+        element: {
+          a: undefined
+        }
+      });
+      var strReference = JXON.jsToString({
+        element: {
+        }
+      });
+      assert.equal(strUndefined, strReference);
+    });
   });
   describe('.each', function() {
     it('one node should iterate', function() {

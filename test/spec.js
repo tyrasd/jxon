@@ -76,7 +76,7 @@ describe('JXON', function() {
       });
 
       var strTwo = JXON.jsToString(JXON.stringToJs('<element><a>first position</a><a>second position</a></element>'));
-      
+
       assert.equal(strOne, strTwo);
     });
 
@@ -156,5 +156,25 @@ describe('JXON', function() {
 
       assert.equal(strNull, strEmptyObj);
     });
+   });
+
+  describe('xml sequences', function() {
+    it('as property', function () {
+      var strNull = JXON.jsToString({
+        'SequencedJS': {
+          'element2': 2,
+          'element1': 1,
+          '_sequence': ['element1', 'element2'],
+          'elementWithSequence': {
+            'element1': 1,
+            'element2': 2
+          }
+        }
+      });
+      var strEmptyObj = '<SequencedJS><element1>1</element1><element2>2</element2><elementWithSequence><element1>1</element1><element2>2</element2></elementWithSequence></SequencedJS>';
+
+      assert.equal(strNull, strEmptyObj);
+    });
+
   });
 });

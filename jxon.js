@@ -280,11 +280,8 @@
           }
           if (vValue instanceof Object) {
             loadObjTree(oXMLDoc, oChild, vValue);
-          } else if (vValue !== null && vValue !== true) {
+          } else if (vValue !== null && (vValue !== true || !opts.trueIsEmpty)) {
             oChild.appendChild(oXMLDoc.createTextNode(vValue.toString()));
-          } else if (!opts.trueIsEmpty && vValue === true) {
-            oChild.appendChild(oXMLDoc.createTextNode(vValue.toString()));
-
           }
           oParentEl.appendChild(oChild);
         }

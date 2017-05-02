@@ -261,6 +261,7 @@
           oParentEl.setAttribute(sName.slice(1), vValue);
         } else if (vValue.constructor === Array) {
           for (var nItem in vValue) {
+            if (!vValue.hasOwnProperty(nItem)) continue;
             elementNS = (vValue[nItem] && vValue[nItem][opts.attrPrefix + 'xmlns']) || oParentEl.namespaceURI;
             if (elementNS) {
               oChild = oXMLDoc.createElementNS(elementNS, sName);

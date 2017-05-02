@@ -79,6 +79,23 @@ describe('JXON', function() {
       
       assert.equal(strOne, strTwo);
     });
+    it('ignores prototypal inherited properties of arrays', function() {
+      Array.prototype.foo = 'bar';
+
+      var myArray = ['first position', 'second position'];
+
+      var strOne = JXON.jsToString({
+        element: {
+          a: myArray
+        }
+      });
+
+      var strTwo = JXON.jsToString(JXON.stringToJs('<element><a>first position</a><a>second position</a></element>'));
+      
+      assert.equal(strOne, strTwo);
+
+      delete Array.prototype.foo;
+    });
 
     it('deal with pure arrays with jumped indexes and null values', function() {
       var myArray = [];

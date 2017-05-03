@@ -20,7 +20,7 @@
  * bugfixes and code cleanup by user @laubstein
  * https://github.com/tyrasd/jxon/pull/32
  *
- * adapted for nodejs and npm by @tyrasd (Martin Raifer <tyr.asd@gmail.com>) 
+ * adapted for nodejs and npm by @tyrasd (Martin Raifer <tyr.asd@gmail.com>)
  */
 
 (function(root, factory) {
@@ -54,7 +54,8 @@
     trueIsEmpty: false,
     autoDate: false,
     ignorePrefixedNodes: false,
-    parseValues: false
+    parseValues: false,
+    sequenceKey: '_sequence'
   };
   var aCache = [];
   var rIsNull = /^\s*$/;
@@ -228,18 +229,49 @@
       } else if (oParentObj.constructor === Date) {
         oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toISOString()));
       }
-      for (var sName in oParentObj) {
+
+      // Pull out properties names
+      var propNames = Object.getOwnPropertyNames(oParentObj);
+
+      // Look for optional _sequence
+      if (oParentObj.hasOwnProperty(opts.sequenceKey)) {
+
+        var sequence = oParentObj[opts.sequenceKey];
+
+        // sort prop names based on _sequence
+        propNames.sort(function(a, b) {
+
+          // Sort comparator
+          // find index of A and B
+          var aIndex = sequence.indexOf(a);
+          var bIndex = sequence.indexOf(b);
+
+          // If prop not named, put on end
+          if (aIndex < 0 || bIndex < 0) {
+            return -1;
+          }
+
+          // Subtract the indexes
+          return aIndex - bIndex;
+        })
+
+      }
+
+      propNames.forEach(function(sName, index) {
 
         vValue = oParentObj[sName];
         if ( vValue === undefined ) {
-          continue;
+          return;
         }
         if ( vValue === null ) {
           vValue = {};
         }
+        if ( sName === opts.sequenceKey) {
+          return;
+        }
 
         if (isFinite(sName) || vValue instanceof Function) {
-          continue;
+          return;
         }
 
         /* verbosity level is 0 */
@@ -286,7 +318,7 @@
           }
           oParentEl.appendChild(oChild);
         }
-      }
+      });
     }
     this.xmlToJs = this.build = function(oXMLParent, nVerbosity /* optional */ , bFreeze /* optional */ , bNesteAttributes /* optional */ ) {
       var _nVerb = arguments.length > 1 && typeof nVerbosity === 'number' ? nVerbosity & 3 : /* put here the default verbosity level: */ 1;

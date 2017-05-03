@@ -7,19 +7,18 @@ var assert = require('chai').assert,
       $attr: 'value',
       _: 'root value'
     }
-  };
-
+};
 
 describe('JXON', function() {
   describe('.jsToXml > .xmlToJs', function() {
-    it('should return return identical object', function() {
+    it('should return identical object', function() {
       var xml = JXON.jsToXml(jsObj);
       var newJs = JXON.xmlToJs(xml);
       assert.deepEqual(jsObj, newJs);
     });
   });
   describe('.jsToString > .stringToJs', function() {
-    it('should return return identical object', function() {
+    it('should return identical object', function() {
       var str = JXON.jsToString(jsObj);
       var newJs = JXON.stringToJs(str);
       assert.deepEqual(jsObj, newJs);
@@ -76,7 +75,7 @@ describe('JXON', function() {
       });
 
       var strTwo = JXON.jsToString(JXON.stringToJs('<element><a>first position</a><a>second position</a></element>'));
-      
+
       assert.equal(strOne, strTwo);
     });
     it('ignores prototypal inherited properties of arrays', function() {
@@ -152,7 +151,7 @@ describe('JXON', function() {
       var str = JXON.jsToString(obj);
       assert.equal(str, '<test xmlns="foo" xmlns:y="moo"/>');
     });
-    it('as property', function() { // addigional test from #26
+    it('as property', function() { // additional test from #26
       var strNull = JXON.jsToString({
         'TrainingCenterDatabase': {
           '$xmlns': '6',
@@ -172,6 +171,24 @@ describe('JXON', function() {
         ' xmlns:tpx="5"/>';
 
       assert.equal(strNull, strEmptyObj);
+    });
+  });
+  describe('xml prolog', function() {
+    it('should be consistent', function() {
+      var originalString = '<?xml version="1.0"?><a>1</a>';
+      var xmlObject = JXON.stringToXml(originalString);
+      var jsonFromXml = JXON.xmlToJs(xmlObject);
+      var jsonFromString = JXON.stringToJs(originalString);
+
+      assert.equal(originalString, JXON.jsToString(jsonFromXml));
+      assert.equal(originalString, JXON.jsToString(jsonFromString));
+
+      // PhantomJS do not serialize the prolog, so we are forcing a default
+      JXON.config({
+        forceXmlProlog: true,
+        defaultXmlProlog: '<?xml version="1.0"?>'
+      });
+      assert.equal(originalString, JXON.xmlToString(xmlObject));
     });
   });
 });

@@ -26,7 +26,12 @@
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define([], factory(window));
+    if (typeof window === 'object' && window.DOMImplementation && window.XMLSerializer && window.DOMParser) {
+      define([], factory(window));
+    }
+    else {
+      define([], factory(require('xmldom'), true));
+    }
   } else if (typeof exports === 'object') {
     if (typeof window === 'object' && window.DOMImplementation && window.XMLSerializer && window.DOMParser) {
       // Browserify. hardcode usage of browser's own XMLDom implementation

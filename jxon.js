@@ -28,8 +28,7 @@
     // AMD. Register as an anonymous module.
     if (typeof window === 'object' && window.DOMImplementation && window.XMLSerializer && window.DOMParser) {
       define([], factory(window));
-    }
-    else {
+    } else {
       define([], factory(require('xmldom'), true));
     }
   } else if (typeof exports === 'object') {

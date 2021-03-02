@@ -173,5 +173,24 @@ describe('JXON', function() {
 
       assert.equal(strNull, strEmptyObj);
     });
+    it('sets the namespace for array elements', function() {
+      var obj = {
+        "element": {
+          "a": [
+            {
+              "$xmlns": "foo",
+              "_": "1"
+            },
+            null,
+            {
+              "$xmlns": "foo",
+              "_": "3"
+            }
+          ]
+        }
+      };
+      var str = JXON.jsToString(obj);
+      assert.equal(str, '<element><a xmlns="foo">1</a><a/><a xmlns="foo">3</a></element>');
+    });
   });
 });

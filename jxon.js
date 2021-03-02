@@ -214,10 +214,33 @@
 
       return vResult;
     }
+
+    function getElementNS(value, oParentEl) {
+      var elementNS;
+
+      if (value && typeof value === 'object') {
+        elementNS = value[opts.attrPrefix + 'xmlns'];
+      }
+
+      return elementNS || oParentEl.namespaceURI;
+    }
+
+    function createElement(sName, value, oParentEl, oXMLDoc) {
+      var elementNS = getElementNS(value, oParentEl),
+        element;        
+
+      if (elementNS) {
+        element = oXMLDoc.createElementNS(elementNS, sName);
+      } else {
+        element = oXMLDoc.createElement(sName);
+      }
+
+      return element;
+    }
+
     function loadObjTree(oXMLDoc, oParentEl, oParentObj) {
       var vValue,
-        oChild,
-        elementNS;
+        oChild;
 
       if (oParentObj.constructor === String || oParentObj.constructor === Number || oParentObj.constructor === Boolean) {
         oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toString())); /* verbosity level is 0 or 1 */
@@ -262,23 +285,13 @@
         } else if (vValue.constructor === Array) {
           for (var nItem in vValue) {
             if (!vValue.hasOwnProperty(nItem)) continue;
-            elementNS = (vValue[nItem] && vValue[nItem][opts.attrPrefix + 'xmlns']) || oParentEl.namespaceURI;
-            if (elementNS) {
-              oChild = oXMLDoc.createElementNS(elementNS, sName);
-            } else {
-              oChild = oXMLDoc.createElement(sName);
-            }
+            oChild = createElement(sName, vValue[nItem], oParentEl, oXMLDoc);
 
             loadObjTree(oXMLDoc, oChild, vValue[nItem] || {});
             oParentEl.appendChild(oChild);
           }
         } else {
-          elementNS = (vValue || {})[opts.attrPrefix + 'xmlns'] || oParentEl.namespaceURI;
-          if (elementNS) {
-            oChild = oXMLDoc.createElementNS(elementNS, sName);
-          } else {
-            oChild = oXMLDoc.createElement(sName);
-          }
+          oChild = createElement(sName, vValue, oParentEl, oXMLDoc);
           if (vValue instanceof Object) {
             loadObjTree(oXMLDoc, oChild, vValue);
           } else if (vValue !== null && (vValue !== true || !opts.trueIsEmpty)) {

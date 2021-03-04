@@ -215,18 +215,32 @@
       return vResult;
     }
 
-    function getElementNS(value, oParentEl) {
-      var elementNS;
+    function getElementNS(sName, vValue, oParentEl) {
+      var xmlns = opts.attrPrefix + 'xmlns',
+        isObject = vValue && vValue instanceof Object,
+        elementNS, 
+        prefix;
 
-      if (value && typeof value === 'object') {
-        elementNS = value[opts.attrPrefix + 'xmlns'];
+      if (sName.indexOf(':') !== -1) {
+        prefix = sName.split(':')[0];
+
+        if (isObject) {
+          elementNS = vValue[xmlns + ':' + prefix];
+          if (elementNS) return elementNS;
+        }
+  
+        elementNS = oParentEl.lookupNamespaceURI(prefix);
+        if (elementNS) return elementNS;
+      } 
+      if (isObject) {
+        elementNS = vValue[xmlns];
       }
 
       return elementNS || oParentEl.namespaceURI;
     }
 
-    function createElement(sName, value, oParentEl, oXMLDoc) {
-      var elementNS = getElementNS(value, oParentEl),
+    function createElement(sName, vValue, oParentEl, oXMLDoc) {
+      var elementNS = getElementNS(sName, vValue, oParentEl),
         element;        
 
       if (elementNS) {
@@ -275,29 +289,27 @@
           for (var sAttrib in vValue) {
             oParentEl.setAttribute(sAttrib, vValue[sAttrib]);
           }
-        } else if (sName === opts.attrPrefix + 'xmlns') {
-          if (isNodeJs) {
-            oParentEl.setAttribute(sName.slice(1), vValue);
-          }
-        // do nothing: special handling of xml namespaces is done via createElementNS()
+        } else if (sName.indexOf(opts.attrPrefix + 'xmlns') === 0) {
+          // explicitly set xmlns and xmlns:* attributes, so they can be set anywhere in the tag hierarchy
+          oParentEl.setAttributeNS('http://www.w3.org/2000/xmlns/', sName.slice(1), vValue);
         } else if (sName.charAt(0) === opts.attrPrefix) {
           oParentEl.setAttribute(sName.slice(1), vValue);
         } else if (vValue.constructor === Array) {
           for (var nItem in vValue) {
             if (!vValue.hasOwnProperty(nItem)) continue;
             oChild = createElement(sName, vValue[nItem], oParentEl, oXMLDoc);
+            oParentEl.appendChild(oChild);
 
             loadObjTree(oXMLDoc, oChild, vValue[nItem] || {});
-            oParentEl.appendChild(oChild);
           }
         } else {
           oChild = createElement(sName, vValue, oParentEl, oXMLDoc);
+          oParentEl.appendChild(oChild);
           if (vValue instanceof Object) {
             loadObjTree(oXMLDoc, oChild, vValue);
           } else if (vValue !== null && (vValue !== true || !opts.trueIsEmpty)) {
             oChild.appendChild(oXMLDoc.createTextNode(vValue.toString()));
           }
-          oParentEl.appendChild(oChild);
         }
       }
     }

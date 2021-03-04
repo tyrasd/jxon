@@ -192,5 +192,42 @@ describe('JXON', function() {
       var str = JXON.jsToString(obj);
       assert.equal(str, '<element><a xmlns="foo">1</a><a/><a xmlns="foo">3</a></element>');
     });
+    it('sets the corresponding parent namespace for prefix', function() {
+      var obj = {
+        root: {
+          "$xmlns": "urn:default",
+          "$xmlns:foo": "urn:foo",
+          element: {
+              "foo:a": "bar"
+          }
+        }
+      };
+      var xml = JXON.jsToXml(obj);
+      var a = xml.documentElement.firstChild.firstChild;
+      var str = JXON.xmlToString(xml);
+
+      assert.equal(a.localName, 'a', 'localName');
+      assert.equal(a.prefix, 'foo', 'prefix');
+      assert.equal(a.namespaceURI, 'urn:foo', 'namespaceURI');
+      
+      assert.equal(str, '<root xmlns="urn:default" xmlns:foo="urn:foo"><element><foo:a>bar</foo:a></element></root>');
+    });
+    it('sets the attribute namespace for prefix', function() {
+      var obj = {
+        "foo:element": {
+          "$xmlns:foo": "urn:foo",
+            "_": "bar"
+        }
+      };
+      var xml = JXON.jsToXml(obj);
+      var element = xml.documentElement;
+      var str = JXON.xmlToString(xml);
+
+      assert.equal(element.localName, 'element', 'localName');
+      assert.equal(element.prefix, 'foo', 'prefix');
+      assert.equal(element.namespaceURI, 'urn:foo', 'namespaceURI');
+      
+      assert.equal(str, '<foo:element xmlns:foo="urn:foo">bar</foo:element>');
+    });
   });
 });

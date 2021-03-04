@@ -151,27 +151,6 @@
         vResult = nVerb === 0 ? objectify(vBuiltVal) : {};
       }
 
-      for (var nElId = nLevelStart; nElId < nLevelEnd; nElId++) {
-
-        sProp = aCache[nElId].nodeName;
-        if (opts.lowerCaseTags) {
-          sProp = sProp.toLowerCase();
-        }
-
-        vContent = createObjTree(aCache[nElId], nVerb, bFreeze, bNesteAttr);
-        if (vResult.hasOwnProperty(sProp)) {
-          if (vResult[sProp].constructor !== Array) {
-            vResult[sProp] = [vResult[sProp]];
-          }
-
-          vResult[sProp].push(vContent);
-        } else {
-          vResult[sProp] = vContent;
-
-          nLength++;
-        }
-      }
-
       if (bAttributes) {
         var nAttrLen = oParentNode.attributes.length,
           sAPrefix = bNesteAttr ? '' : opts.attrPrefix,
@@ -199,6 +178,27 @@
           nLength -= nAttrLen - 1;
         }
 
+      }
+
+      for (var nElId = nLevelStart; nElId < nLevelEnd; nElId++) {
+
+        sProp = aCache[nElId].nodeName;
+        if (opts.lowerCaseTags) {
+          sProp = sProp.toLowerCase();
+        }
+
+        vContent = createObjTree(aCache[nElId], nVerb, bFreeze, bNesteAttr);
+        if (vResult.hasOwnProperty(sProp)) {
+          if (vResult[sProp].constructor !== Array) {
+            vResult[sProp] = [vResult[sProp]];
+          }
+
+          vResult[sProp].push(vContent);
+        } else {
+          vResult[sProp] = vContent;
+
+          nLength++;
+        }
       }
 
       if (nVerb === 3 || (nVerb === 2 || nVerb === 1 && nLength > 0) && sCollectedTxt) {

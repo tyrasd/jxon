@@ -229,5 +229,11 @@ describe('JXON', function() {
       
       assert.equal(str, '<foo:element xmlns:foo="urn:foo">bar</foo:element>');
     });
+    it('keeps prefix and namespace on XML round trip', function() {
+      var str1 = '<root xmlns="urn:default" xmlns:foo="urn:foo"><element><foo:a>bar</foo:a></element></root>';
+      var obj = JXON.stringToJs(str1);
+      var str2 = JXON.jsToString(obj);
+      assert.equal(str1, str2);
+    });
   });
 });

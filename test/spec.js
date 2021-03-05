@@ -173,5 +173,86 @@ describe('JXON', function() {
 
       assert.equal(strNull, strEmptyObj);
     });
+    it('sets the namespace for array elements', function() {
+      var obj = {
+        "element": {
+          "a": [
+            {
+              "$xmlns": "foo",
+              "_": "1"
+            },
+            null,
+            {
+              "$xmlns": "foo",
+              "_": "3"
+            }
+          ]
+        }
+      };
+      var str = JXON.jsToString(obj);
+      assert.equal(str, '<element><a xmlns="foo">1</a><a/><a xmlns="foo">3</a></element>');
+    });
+    it('sets the corresponding parent namespace for prefix', function() {
+      var obj = {
+        root: {
+          "$xmlns": "urn:default",
+          "$xmlns:foo": "urn:foo",
+          element: {
+              "foo:a": "bar"
+          }
+        }
+      };
+      var xml = JXON.jsToXml(obj);
+      var a = xml.documentElement.firstChild.firstChild;
+      var str = JXON.xmlToString(xml);
+
+      assert.equal(a.localName, 'a', 'localName');
+      assert.equal(a.prefix, 'foo', 'prefix');
+      assert.equal(a.namespaceURI, 'urn:foo', 'namespaceURI');
+      
+      assert.equal(str, '<root xmlns="urn:default" xmlns:foo="urn:foo"><element><foo:a>bar</foo:a></element></root>');
+    });
+    it('sets the attribute namespace for prefix', function() {
+      var obj = {
+        "foo:element": {
+          "$xmlns:foo": "urn:foo",
+            "_": "bar"
+        }
+      };
+      var xml = JXON.jsToXml(obj);
+      var element = xml.documentElement;
+      var str = JXON.xmlToString(xml);
+
+      assert.equal(element.localName, 'element', 'localName');
+      assert.equal(element.prefix, 'foo', 'prefix');
+      assert.equal(element.namespaceURI, 'urn:foo', 'namespaceURI');
+      
+      assert.equal(str, '<foo:element xmlns:foo="urn:foo">bar</foo:element>');
+    });
+    it('keeps prefix and namespace on XML round trip', function() {
+      var str1 = '<root xmlns="urn:default" xmlns:foo="urn:foo"><element><foo:a>bar</foo:a></element></root>';
+      var obj = JXON.stringToJs(str1);
+      var str2 = JXON.jsToString(obj);
+      assert.equal(str1, str2);
+    });
+    it('sets the namespace for prefixed attributes', function() {
+      var obj = {
+        "element": {
+          "$xmlns": "urn:default",
+          "$xmlns:foo": "urn:foo",
+          "$foo:a": "bar"
+        }
+      };
+      var xml = JXON.jsToXml(obj);
+      var element = xml.documentElement;
+      var str = JXON.xmlToString(xml);
+      var attr = element.attributes[2];
+
+      assert.equal(attr.localName, 'a', 'localName');
+      assert.equal(attr.prefix, 'foo', 'prefix');
+      assert.equal(attr.namespaceURI, 'urn:foo', 'namespaceURI');
+      
+      assert.equal(str, '<element xmlns="urn:default" xmlns:foo="urn:foo" foo:a="bar"/>');
+    });
   });
 });

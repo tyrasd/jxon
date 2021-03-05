@@ -151,27 +151,6 @@
         vResult = nVerb === 0 ? objectify(vBuiltVal) : {};
       }
 
-      for (var nElId = nLevelStart; nElId < nLevelEnd; nElId++) {
-
-        sProp = aCache[nElId].nodeName;
-        if (opts.lowerCaseTags) {
-          sProp = sProp.toLowerCase();
-        }
-
-        vContent = createObjTree(aCache[nElId], nVerb, bFreeze, bNesteAttr);
-        if (vResult.hasOwnProperty(sProp)) {
-          if (vResult[sProp].constructor !== Array) {
-            vResult[sProp] = [vResult[sProp]];
-          }
-
-          vResult[sProp].push(vContent);
-        } else {
-          vResult[sProp] = vContent;
-
-          nLength++;
-        }
-      }
-
       if (bAttributes) {
         var nAttrLen = oParentNode.attributes.length,
           sAPrefix = bNesteAttr ? '' : opts.attrPrefix,
@@ -201,6 +180,27 @@
 
       }
 
+      for (var nElId = nLevelStart; nElId < nLevelEnd; nElId++) {
+
+        sProp = aCache[nElId].nodeName;
+        if (opts.lowerCaseTags) {
+          sProp = sProp.toLowerCase();
+        }
+
+        vContent = createObjTree(aCache[nElId], nVerb, bFreeze, bNesteAttr);
+        if (vResult.hasOwnProperty(sProp)) {
+          if (vResult[sProp].constructor !== Array) {
+            vResult[sProp] = [vResult[sProp]];
+          }
+
+          vResult[sProp].push(vContent);
+        } else {
+          vResult[sProp] = vContent;
+
+          nLength++;
+        }
+      }
+
       if (nVerb === 3 || (nVerb === 2 || nVerb === 1 && nLength > 0) && sCollectedTxt) {
         vResult[opts.valueKey] = vBuiltVal;
       } else if (!bHighVerb && nLength === 0 && sCollectedTxt) {
@@ -214,10 +214,60 @@
 
       return vResult;
     }
+
+    function getElementNS(sName, vValue, oParentEl) {
+      var xmlns = opts.attrPrefix + 'xmlns',
+        isObject = vValue && vValue instanceof Object,
+        elementNS, 
+        prefix;
+
+      if (sName.indexOf(':') !== -1) {
+        prefix = sName.split(':')[0];
+
+        if (isObject) {
+          elementNS = vValue[xmlns + ':' + prefix];
+          if (elementNS) return elementNS;
+        }
+  
+        elementNS = oParentEl.lookupNamespaceURI(prefix);
+        if (elementNS) return elementNS;
+      } 
+      if (isObject) {
+        elementNS = vValue[xmlns];
+      }
+
+      return elementNS || oParentEl.namespaceURI;
+    }
+
+    function setAttribute(sAttrib, vValue, oParentEl) {
+      var attributeNS, 
+        prefix;
+
+      if (sAttrib.indexOf(':') !== -1) {
+        prefix = sAttrib.split(':')[0];
+        attributeNS = oParentEl.lookupNamespaceURI(prefix) || oParentEl.namespaceURI;
+        oParentEl.setAttributeNS(attributeNS, sAttrib, vValue);
+      } else {
+        oParentEl.setAttribute(sAttrib, vValue);
+      }
+    }
+
+    function createElement(sName, vValue, oParentEl, oXMLDoc) {
+      var elementNS = getElementNS(sName, vValue, oParentEl),
+        element;        
+
+      if (elementNS) {
+        element = oXMLDoc.createElementNS(elementNS, sName);
+      } else {
+        element = oXMLDoc.createElement(sName);
+      }
+
+      return element;
+    }
+
     function loadObjTree(oXMLDoc, oParentEl, oParentObj) {
       var vValue,
-        oChild,
-        elementNS;
+        oChild;
 
       if (oParentObj.constructor === String || oParentObj.constructor === Number || oParentObj.constructor === Boolean) {
         oParentEl.appendChild(oXMLDoc.createTextNode(oParentObj.toString())); /* verbosity level is 0 or 1 */
@@ -250,41 +300,29 @@
 
         } else if (sName === opts.attrKey) { /* verbosity level is 3 */
           for (var sAttrib in vValue) {
-            oParentEl.setAttribute(sAttrib, vValue[sAttrib]);
+            setAttribute(sAttrib, vValue[sAttrib], oParentEl);
           }
-        } else if (sName === opts.attrPrefix + 'xmlns') {
-          if (isNodeJs) {
-            oParentEl.setAttribute(sName.slice(1), vValue);
-          }
-        // do nothing: special handling of xml namespaces is done via createElementNS()
+        } else if (sName.indexOf(opts.attrPrefix + 'xmlns') === 0) {
+          // explicitly set xmlns and xmlns:* attributes, so they can be set anywhere in the tag hierarchy
+          oParentEl.setAttributeNS('http://www.w3.org/2000/xmlns/', sName.slice(1), vValue);
         } else if (sName.charAt(0) === opts.attrPrefix) {
-          oParentEl.setAttribute(sName.slice(1), vValue);
+          setAttribute(sName.slice(1), vValue, oParentEl);
         } else if (vValue.constructor === Array) {
           for (var nItem in vValue) {
             if (!vValue.hasOwnProperty(nItem)) continue;
-            elementNS = (vValue[nItem] && vValue[nItem][opts.attrPrefix + 'xmlns']) || oParentEl.namespaceURI;
-            if (elementNS) {
-              oChild = oXMLDoc.createElementNS(elementNS, sName);
-            } else {
-              oChild = oXMLDoc.createElement(sName);
-            }
+            oChild = createElement(sName, vValue[nItem], oParentEl, oXMLDoc);
+            oParentEl.appendChild(oChild);
 
             loadObjTree(oXMLDoc, oChild, vValue[nItem] || {});
-            oParentEl.appendChild(oChild);
           }
         } else {
-          elementNS = (vValue || {})[opts.attrPrefix + 'xmlns'] || oParentEl.namespaceURI;
-          if (elementNS) {
-            oChild = oXMLDoc.createElementNS(elementNS, sName);
-          } else {
-            oChild = oXMLDoc.createElement(sName);
-          }
+          oChild = createElement(sName, vValue, oParentEl, oXMLDoc);
+          oParentEl.appendChild(oChild);
           if (vValue instanceof Object) {
             loadObjTree(oXMLDoc, oChild, vValue);
           } else if (vValue !== null && (vValue !== true || !opts.trueIsEmpty)) {
             oChild.appendChild(oXMLDoc.createTextNode(vValue.toString()));
           }
-          oParentEl.appendChild(oChild);
         }
       }
     }

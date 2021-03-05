@@ -239,6 +239,19 @@
       return elementNS || oParentEl.namespaceURI;
     }
 
+    function setAttribute(sAttrib, vValue, oParentEl) {
+      var attributeNS, 
+        prefix;
+
+      if (sAttrib.indexOf(':') !== -1) {
+        prefix = sAttrib.split(':')[0];
+        attributeNS = oParentEl.lookupNamespaceURI(prefix) || oParentEl.namespaceURI;
+        oParentEl.setAttributeNS(attributeNS, sAttrib, vValue);
+      } else {
+        oParentEl.setAttribute(sAttrib, vValue);
+      }
+    }
+
     function createElement(sName, vValue, oParentEl, oXMLDoc) {
       var elementNS = getElementNS(sName, vValue, oParentEl),
         element;        
@@ -287,13 +300,13 @@
 
         } else if (sName === opts.attrKey) { /* verbosity level is 3 */
           for (var sAttrib in vValue) {
-            oParentEl.setAttribute(sAttrib, vValue[sAttrib]);
+            setAttribute(sAttrib, vValue[sAttrib], oParentEl);
           }
         } else if (sName.indexOf(opts.attrPrefix + 'xmlns') === 0) {
           // explicitly set xmlns and xmlns:* attributes, so they can be set anywhere in the tag hierarchy
           oParentEl.setAttributeNS('http://www.w3.org/2000/xmlns/', sName.slice(1), vValue);
         } else if (sName.charAt(0) === opts.attrPrefix) {
-          oParentEl.setAttribute(sName.slice(1), vValue);
+          setAttribute(sName.slice(1), vValue, oParentEl);
         } else if (vValue.constructor === Array) {
           for (var nItem in vValue) {
             if (!vValue.hasOwnProperty(nItem)) continue;

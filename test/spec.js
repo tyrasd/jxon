@@ -235,5 +235,24 @@ describe('JXON', function() {
       var str2 = JXON.jsToString(obj);
       assert.equal(str1, str2);
     });
+    it('sets the namespace for prefixed attributes', function() {
+      var obj = {
+        "element": {
+          "$xmlns": "urn:default",
+          "$xmlns:foo": "urn:foo",
+          "$foo:a": "bar"
+        }
+      };
+      var xml = JXON.jsToXml(obj);
+      var element = xml.documentElement;
+      var str = JXON.xmlToString(xml);
+      var attr = element.attributes[2];
+
+      assert.equal(attr.localName, 'a', 'localName');
+      assert.equal(attr.prefix, 'foo', 'prefix');
+      assert.equal(attr.namespaceURI, 'urn:foo', 'namespaceURI');
+      
+      assert.equal(str, '<element xmlns="urn:default" xmlns:foo="urn:foo" foo:a="bar"/>');
+    });
   });
 });

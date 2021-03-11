@@ -42,7 +42,7 @@
   },
   "license": "GPL v3",
   "dependencies": {
-    "xmldom": "^0.1.21"
+    "xmldom": "^0.5.0"
   },
   "devDependencies": {
     "browserify": "^13.0.0",

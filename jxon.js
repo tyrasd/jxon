@@ -20,7 +20,7 @@
  * bugfixes and code cleanup by user @laubstein
  * https://github.com/tyrasd/jxon/pull/32
  *
- * adapted for nodejs and npm by @tyrasd (Martin Raifer <tyr.asd@gmail.com>) 
+ * adapted for nodejs and npm by @tyrasd (Martin Raifer <tyr.asd@gmail.com>)
  */
 
 (function(root, factory) {
@@ -38,7 +38,7 @@
       // only CommonJS-like environments that support module.exports,
       // like Node.
 
-      module.exports = factory(require('xmldom'), true);
+      module.exports = factory(require('@xmldom/xmldom'), true);
     }
   } else {
     // Browser globals (root is window)
